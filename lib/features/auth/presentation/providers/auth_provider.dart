@@ -13,17 +13,14 @@ class AuthNotifier extends Notifier<Usuario?> {
   AuthRepository get _repository => ref.read(authRepositoryProvider);
 
   @override
-  Usuario? build() {
-    final user = _repository.usuarioAtual;
-    if (user == null) return null;
-    return null;
-  }
+  Usuario? build() => null;
 
   Future<void> login({
     required String email,
     required String password,
   }) async {
-    final response = await _repository.login(email: email, password: password);
+    final response =
+        await _repository.login(email: email, password: password);
     final userId = response.user!.id;
     final map = await _repository.buscarPerfil(userId);
     state = Usuario.fromMap(map);

@@ -18,10 +18,16 @@ class RouterNotifier extends ChangeNotifier {
 
   String? redirect(BuildContext context, GoRouterState state) {
     final usuario = _ref.read(authProvider);
-    if (state.matchedLocation.startsWith('/gestor') &&
-        (usuario == null || !usuario.isGestor)) {
-      return '/login';
+    final loc = state.matchedLocation;
+
+    // Não autenticado tentando acessar rota de gestor
+    if (usuario == null && loc.startsWith('/gestor')) return '/login';
+
+    // Autenticado na tela de login/cadastro → vai para home
+    if (usuario != null && (loc == '/login' || loc == '/cadastro')) {
+      return usuario.isGestor ? '/gestor/mediuns' : '/login';
     }
+
     return null;
   }
 }
