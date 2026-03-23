@@ -1,6 +1,7 @@
 import 'package:cobm_atendimento/features/auth/domain/models/usuario.dart';
 import 'package:cobm_atendimento/features/entidades/domain/models/entidade.dart';
 import 'package:cobm_atendimento/features/mediuns/domain/models/medium.dart';
+import 'package:cobm_atendimento/features/sessao/domain/models/sessao.dart';
 
 final usuarioFake = Usuario(
   id: 'uuid-123',
@@ -57,3 +58,11 @@ final mediumMapFake = {
   'ativo': true,
   'created_at': '2024-01-01T00:00:00.000',
 };
+
+final sessaoFake = Sessao(
+  id: 'uuid-sess-001',
+  gestorId: 'uuid-456',
+  status: StatusSessao.aberta,
+  abertaEm: DateTime(2024, 1, 1, 9, 0),
+  encerradaEm: null,
+);
