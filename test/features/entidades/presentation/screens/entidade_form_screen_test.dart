@@ -7,17 +7,29 @@ import 'package:cobm_atendimento/features/entidades/data/entidades_repository.da
 import 'package:cobm_atendimento/features/entidades/domain/models/entidade.dart';
 import 'package:cobm_atendimento/features/entidades/presentation/providers/entidades_provider.dart';
 import 'package:cobm_atendimento/features/entidades/presentation/screens/entidade_form_screen.dart';
+import 'package:cobm_atendimento/features/mediuns/data/mediuns_repository.dart';
+import 'package:cobm_atendimento/features/mediuns/presentation/providers/mediuns_provider.dart';
 import 'package:cobm_atendimento/core/theme/app_theme.dart';
 import '../../../../core/helpers/test_helpers.dart';
 
 class MockEntidadesRepository extends Mock implements EntidadesRepository {}
+class MockMediunsRepository extends Mock implements MediunsRepository {}
 
 void main() {
-  late MockEntidadesRepository mockRepository;
+  late MockEntidadesRepository mockEntidadesRepo;
+  late MockMediunsRepository mockMediunsRepo;
 
-  setUpAll(() => registerFallbackValue(entidadeFake));
+  setUpAll(() {
+    registerFallbackValue(entidadeFake);
+    registerFallbackValue(mediumFake);
+  });
 
-  setUp(() => mockRepository = MockEntidadesRepository());
+  setUp(() {
+    mockEntidadesRepo = MockEntidadesRepository();
+    mockMediunsRepo = MockMediunsRepository();
+    when(() => mockMediunsRepo.listarAtivos())
+        .thenAnswer((_) async => [mediumFake]);
+  });
 
   Widget buildWidget({Entidade? entidade}) {
     final router = GoRouter(
@@ -37,7 +49,8 @@ void main() {
     );
     return ProviderScope(
       overrides: [
-        entidadesRepositoryProvider.overrideWithValue(mockRepository),
+        entidadesRepositoryProvider.overrideWithValue(mockEntidadesRepo),
+        mediunsRepositoryProvider.overrideWithValue(mockMediunsRepo),
       ],
       child: MaterialApp.router(
         theme: AppTheme.light,
@@ -57,6 +70,13 @@ void main() {
       expect(find.byKey(const Key('descricao_field')), findsOneWidget);
     });
 
+    testWidgets('deve exibir lista de médiuns ativos', (tester) async {
+      await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
+
+      expect(find.text(mediumFake.nome), findsOneWidget);
+    });
+
     testWidgets('deve exibir erro quando nome está vazio', (tester) async {
       await tester.pumpWidget(buildWidget());
       await tester.tap(find.byKey(const Key('btn_salvar')));
@@ -67,19 +87,20 @@ void main() {
 
     testWidgets('deve chamar criar quando formulário é válido sem entidade existente',
         (tester) async {
-      when(() => mockRepository.listar())
+      when(() => mockEntidadesRepo.listar())
           .thenAnswer((_) async => [entidadeFake]);
-      when(() => mockRepository.criar(
+      when(() => mockEntidadesRepo.criar(
             nome: any(named: 'nome'),
             descricao: any(named: 'descricao'),
           )).thenAnswer((_) async => entidadeFake);
 
       await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
       await tester.enterText(find.byKey(const Key('nome_field')), 'Exu');
       await tester.tap(find.byKey(const Key('btn_salvar')));
       await tester.pumpAndSettle();
 
-      verify(() => mockRepository.criar(
+      verify(() => mockEntidadesRepo.criar(
             nome: 'Exu',
             descricao: any(named: 'descricao'),
           )).called(1);
@@ -87,17 +108,34 @@ void main() {
 
     testWidgets('deve chamar atualizar quando formulário é válido com entidade existente',
         (tester) async {
-      when(() => mockRepository.listar())
+      when(() => mockEntidadesRepo.listar())
           .thenAnswer((_) async => [entidadeFake]);
-      when(() => mockRepository.salvar(any())).thenAnswer((_) async {});
+      when(() => mockEntidadesRepo.salvar(any())).thenAnswer((_) async {});
+      when(() => mockEntidadesRepo.listarMediuns(any()))
+          .thenAnswer((_) async => []);
 
       await tester.pumpWidget(buildWidget(entidade: entidadeFake));
+      await tester.pumpAndSettle();
       await tester.enterText(
           find.byKey(const Key('nome_field')), 'Exu Atualizado');
       await tester.tap(find.byKey(const Key('btn_salvar')));
       await tester.pumpAndSettle();
 
-      verify(() => mockRepository.salvar(any())).called(1);
+      verify(() => mockEntidadesRepo.salvar(any())).called(1);
+    });
+
+    testWidgets('deve marcar médium como selecionado ao tocar no checkbox',
+        (tester) async {
+      await tester.pumpWidget(buildWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(Key('medium_check_${mediumFake.id}')));
+      await tester.pumpAndSettle();
+
+      final checkbox = tester.widget<CheckboxListTile>(
+        find.byKey(Key('medium_check_${mediumFake.id}')),
+      );
+      expect(checkbox.value, isTrue);
     });
   });
 }

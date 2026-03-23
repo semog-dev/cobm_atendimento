@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:cobm_atendimento/features/entidades/domain/models/entidade.dart';
+import 'package:cobm_atendimento/features/mediuns/domain/models/medium.dart';
 
 class EntidadesRepository {
   EntidadesRepository({required SupabaseClient client}) : _client = client;
@@ -48,5 +49,36 @@ class EntidadesRepository {
 
   Future<void> desativar(String id) {
     return _client.from('entidades').update({'ativa': false}).eq('id', id);
+  }
+
+  Future<List<Medium>> listarMediuns(String entidadeId) async {
+    final data = await _client
+        .from('medium_entidades')
+        .select('mediuns(*)')
+        .eq('entidade_id', entidadeId);
+    return (data as List)
+        .map((e) => Medium.fromMap(e['mediuns'] as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<void> vincularMedium({
+    required String entidadeId,
+    required String mediumId,
+  }) {
+    return _client.from('medium_entidades').insert({
+      'entidade_id': entidadeId,
+      'medium_id': mediumId,
+    });
+  }
+
+  Future<void> desvincularMedium({
+    required String entidadeId,
+    required String mediumId,
+  }) {
+    return _client
+        .from('medium_entidades')
+        .delete()
+        .eq('entidade_id', entidadeId)
+        .eq('medium_id', mediumId);
   }
 }

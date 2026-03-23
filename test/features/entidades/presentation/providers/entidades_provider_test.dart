@@ -78,7 +78,7 @@ void main() {
       expect(result, [entidadeFake]);
     });
 
-    test('deve criar entidade e recarregar lista', () async {
+    test('deve criar entidade sem médiuns vinculados', () async {
       when(() => mockRepository.listar())
           .thenAnswer((_) async => [entidadeFake]);
       when(() => mockRepository.criar(
@@ -94,6 +94,73 @@ void main() {
       verify(() => mockRepository.criar(
             nome: 'Exu Tranca Ruas',
             descricao: 'Guardião das encruzilhadas',
+          )).called(1);
+      verifyNever(() => mockRepository.vincularMedium(
+            entidadeId: any(named: 'entidadeId'),
+            mediumId: any(named: 'mediumId'),
+          ));
+    });
+
+    test('deve criar entidade e vincular médiuns selecionados', () async {
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [entidadeFake]);
+      when(() => mockRepository.criar(
+            nome: any(named: 'nome'),
+            descricao: any(named: 'descricao'),
+          )).thenAnswer((_) async => entidadeFake);
+      when(() => mockRepository.vincularMedium(
+            entidadeId: any(named: 'entidadeId'),
+            mediumId: any(named: 'mediumId'),
+          )).thenAnswer((_) async {});
+
+      await container.read(entidadesGestorProvider.notifier).criar(
+            nome: 'Exu',
+            mediumIds: {mediumFake.id},
+          );
+
+      verify(() => mockRepository.vincularMedium(
+            entidadeId: entidadeFake.id,
+            mediumId: mediumFake.id,
+          )).called(1);
+    });
+
+    test('deve vincular novos médiuns ao atualizar vínculos', () async {
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [entidadeFake]);
+      when(() => mockRepository.vincularMedium(
+            entidadeId: any(named: 'entidadeId'),
+            mediumId: any(named: 'mediumId'),
+          )).thenAnswer((_) async {});
+
+      await container.read(entidadesGestorProvider.notifier).atualizarVinculos(
+            entidadeId: entidadeFake.id,
+            novosIds: {mediumFake.id},
+            idsAntigos: {},
+          );
+
+      verify(() => mockRepository.vincularMedium(
+            entidadeId: entidadeFake.id,
+            mediumId: mediumFake.id,
+          )).called(1);
+    });
+
+    test('deve desvincular médiuns removidos ao atualizar vínculos', () async {
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [entidadeFake]);
+      when(() => mockRepository.desvincularMedium(
+            entidadeId: any(named: 'entidadeId'),
+            mediumId: any(named: 'mediumId'),
+          )).thenAnswer((_) async {});
+
+      await container.read(entidadesGestorProvider.notifier).atualizarVinculos(
+            entidadeId: entidadeFake.id,
+            novosIds: {},
+            idsAntigos: {mediumFake.id},
+          );
+
+      verify(() => mockRepository.desvincularMedium(
+            entidadeId: entidadeFake.id,
+            mediumId: mediumFake.id,
           )).called(1);
     });
 

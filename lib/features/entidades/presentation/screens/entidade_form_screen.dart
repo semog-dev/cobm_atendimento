@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cobm_atendimento/features/entidades/domain/models/entidade.dart';
 import 'package:cobm_atendimento/features/entidades/presentation/providers/entidades_provider.dart';
+import 'package:cobm_atendimento/features/mediuns/presentation/providers/mediuns_provider.dart';
 
 class EntidadeFormScreen extends ConsumerStatefulWidget {
   const EntidadeFormScreen({super.key, this.entidade});
@@ -18,14 +19,16 @@ class _EntidadeFormScreenState extends ConsumerState<EntidadeFormScreen> {
   late final TextEditingController _nomeController;
   late final TextEditingController _descricaoController;
   bool _carregando = false;
+  Set<String> _mediunsSelecionados = {};
+  Set<String> _mediunsOriginais = {};
+  bool _vinculosCarregados = false;
 
   bool get _editando => widget.entidade != null;
 
   @override
   void initState() {
     super.initState();
-    _nomeController =
-        TextEditingController(text: widget.entidade?.nome ?? '');
+    _nomeController = TextEditingController(text: widget.entidade?.nome ?? '');
     _descricaoController =
         TextEditingController(text: widget.entidade?.descricao ?? '');
   }
@@ -50,10 +53,16 @@ class _EntidadeFormScreenState extends ConsumerState<EntidadeFormScreen> {
             descricao: _descricaoController.text.trim(),
           ),
         );
+        await notifier.atualizarVinculos(
+          entidadeId: widget.entidade!.id,
+          novosIds: _mediunsSelecionados,
+          idsAntigos: _mediunsOriginais,
+        );
       } else {
         await notifier.criar(
           nome: _nomeController.text.trim(),
           descricao: _descricaoController.text.trim(),
+          mediumIds: _mediunsSelecionados,
         );
       }
       if (mounted) context.pop();
@@ -64,15 +73,34 @@ class _EntidadeFormScreenState extends ConsumerState<EntidadeFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final mediunsState = ref.watch(mediunsAtivosProvider);
+
+    // Carrega vínculos existentes uma única vez ao editar
+    if (_editando && !_vinculosCarregados) {
+      ref
+          .watch(mediunsVinculadosProvider(widget.entidade!.id))
+          .whenData((vinculados) {
+        if (!_vinculosCarregados) {
+          final ids = vinculados.map((m) => m.id).toSet();
+          setState(() {
+            _mediunsSelecionados = ids;
+            _mediunsOriginais = Set.from(ids);
+            _vinculosCarregados = true;
+          });
+        }
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_editando ? 'Editar Entidade' : 'Nova Entidade'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
                 key: const Key('nome_field'),
@@ -88,16 +116,47 @@ class _EntidadeFormScreenState extends ConsumerState<EntidadeFormScreen> {
                 decoration: const InputDecoration(labelText: 'Descrição'),
                 maxLines: 3,
               ),
+              const SizedBox(height: 24),
+              Text(
+                'Médiuns vinculados',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 8),
+              mediunsState.when(
+                loading: () =>
+                    const Center(child: CircularProgressIndicator()),
+                error: (e, _) =>
+                    Text('Erro ao carregar médiuns: $e'),
+                data: (mediuns) => mediuns.isEmpty
+                    ? const Text('Nenhum médium ativo cadastrado.')
+                    : Column(
+                        key: const Key('mediuns_list'),
+                        children: mediuns
+                            .map((medium) => CheckboxListTile(
+                                  key: Key('medium_check_${medium.id}'),
+                                  title: Text(medium.nome),
+                                  value: _mediunsSelecionados
+                                      .contains(medium.id),
+                                  onChanged: (selected) {
+                                    setState(() {
+                                      if (selected == true) {
+                                        _mediunsSelecionados.add(medium.id);
+                                      } else {
+                                        _mediunsSelecionados.remove(medium.id);
+                                      }
+                                    });
+                                  },
+                                ))
+                            .toList(),
+                      ),
+              ),
               const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  key: const Key('btn_salvar'),
-                  onPressed: _carregando ? null : _salvar,
-                  child: _carregando
-                      ? const CircularProgressIndicator()
-                      : const Text('Salvar'),
-                ),
+              ElevatedButton(
+                key: const Key('btn_salvar'),
+                onPressed: _carregando ? null : _salvar,
+                child: _carregando
+                    ? const CircularProgressIndicator()
+                    : const Text('Salvar'),
               ),
             ],
           ),
