@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/theme/app_theme.dart';
 
 class App extends ConsumerWidget {
   const App({super.key});
@@ -9,10 +10,9 @@ class App extends ConsumerWidget {
     return MaterialApp(
       title: 'Cobm Atendimento',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.system,
       home: const Scaffold(
         body: Center(child: Text('Cobm Atendimento')),
       ),
