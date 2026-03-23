@@ -2,6 +2,7 @@ import 'package:cobm_atendimento/features/auth/domain/models/usuario.dart';
 import 'package:cobm_atendimento/features/entidades/domain/models/entidade.dart';
 import 'package:cobm_atendimento/features/mediuns/domain/models/medium.dart';
 import 'package:cobm_atendimento/features/sessao/domain/models/sessao.dart';
+import 'package:cobm_atendimento/features/fila/domain/models/entrada_fila.dart';
 
 final usuarioFake = Usuario(
   id: 'uuid-123',
@@ -65,4 +66,18 @@ final sessaoFake = Sessao(
   status: StatusSessao.aberta,
   abertaEm: DateTime(2024, 1, 1, 9, 0),
   encerradaEm: null,
+);
+
+final entradaFilaFake = EntradaFila(
+  id: 'uuid-fila-001',
+  sessaoId: 'uuid-sess-001',
+  clienteId: 'uuid-123',
+  mediumEntidadeId: 'uuid-me-001',
+  posicao: 1,
+  status: StatusFila.aguardando,
+  criadoEm: DateTime(2024, 1, 1, 9, 0),
+  chamadoEm: null,
+  iniciadoEm: null,
+  encerradoEm: null,
+  duracaoSegundos: null,
 );
