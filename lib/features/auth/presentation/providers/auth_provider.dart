@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:cobm_atendimento/features/auth/data/auth_repository.dart';
 import 'package:cobm_atendimento/features/auth/domain/models/usuario.dart';
 import 'package:cobm_atendimento/core/config/supabase_config.dart';
@@ -13,14 +14,38 @@ class AuthNotifier extends Notifier<Usuario?> {
   AuthRepository get _repository => ref.read(authRepositoryProvider);
 
   @override
-  Usuario? build() => null;
+  Usuario? build() {
+    // Escuta mudanças de sessão (token refresh, logout externo)
+    final sub = _repository.authStateChanges.listen((event) {
+      if (event.event == AuthChangeEvent.signedOut) {
+        state = null;
+      }
+    });
+    ref.onDispose(sub.cancel);
+
+    // Restaura sessão existente de forma assíncrona
+    final user = _repository.usuarioAtual;
+    if (user != null) {
+      Future.microtask(() => _carregarPerfil(user.id));
+    }
+
+    return null;
+  }
+
+  Future<void> _carregarPerfil(String userId) async {
+    try {
+      final map = await _repository.buscarPerfil(userId);
+      state = Usuario.fromMap(map);
+    } catch (_) {
+      // sessão inválida ou perfil não encontrado — mantém null
+    }
+  }
 
   Future<void> login({
     required String email,
     required String password,
   }) async {
-    final response =
-        await _repository.login(email: email, password: password);
+    final response = await _repository.login(email: email, password: password);
     final userId = response.user!.id;
     final map = await _repository.buscarPerfil(userId);
     state = Usuario.fromMap(map);
