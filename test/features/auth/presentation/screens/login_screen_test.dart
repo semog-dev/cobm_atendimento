@@ -1,19 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:cobm_atendimento/features/auth/data/auth_repository.dart';
 import 'package:cobm_atendimento/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cobm_atendimento/features/auth/presentation/screens/login_screen.dart';
+import 'package:cobm_atendimento/features/auth/presentation/screens/cadastro_screen.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 
 Widget _buildWidget(MockAuthRepository mockRepository) {
+  final router = GoRouter(
+    initialLocation: '/login',
+    routes: [
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+      GoRoute(path: '/cadastro', builder: (context, state) => const CadastroScreen()),
+    ],
+  );
+
   return ProviderScope(
     overrides: [
       authRepositoryProvider.overrideWithValue(mockRepository),
     ],
-    child: const MaterialApp(home: LoginScreen()),
+    child: MaterialApp.router(routerConfig: router),
   );
 }
 
@@ -43,6 +53,16 @@ void main() {
       await tester.pumpWidget(_buildWidget(mockRepository));
 
       expect(find.byKey(const Key('btn_cadastro')), findsOneWidget);
+    });
+
+    testWidgets('deve navegar para tela de cadastro ao tocar no link',
+        (tester) async {
+      await tester.pumpWidget(_buildWidget(mockRepository));
+
+      await tester.tap(find.byKey(const Key('btn_cadastro')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('nome_field')), findsOneWidget);
     });
 
     testWidgets('deve exibir erro quando email está vazio', (tester) async {
