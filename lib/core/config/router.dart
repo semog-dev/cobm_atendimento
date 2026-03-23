@@ -9,6 +9,9 @@ import 'package:cobm_atendimento/features/gestor/presentation/screens/gestor_she
 import 'package:cobm_atendimento/features/mediuns/domain/models/medium.dart';
 import 'package:cobm_atendimento/features/mediuns/presentation/screens/mediuns_screen.dart';
 import 'package:cobm_atendimento/features/mediuns/presentation/screens/medium_form_screen.dart';
+import 'package:cobm_atendimento/features/entidades/domain/models/entidade.dart';
+import 'package:cobm_atendimento/features/entidades/presentation/screens/entidades_screen.dart';
+import 'package:cobm_atendimento/features/entidades/presentation/screens/entidade_form_screen.dart';
 import 'package:cobm_atendimento/features/sessao/presentation/screens/sessao_screen.dart';
 import 'package:cobm_atendimento/features/fila/presentation/screens/fila_screen.dart';
 
@@ -74,6 +77,26 @@ final routerProvider = Provider<GoRouter>((ref) {
                   name: 'medium-editar',
                   builder: (context, state) =>
                       MediumFormScreen(medium: state.extra as Medium?),
+                ),
+              ],
+            ),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/gestor/entidades',
+              name: 'entidades',
+              builder: (context, state) => const EntidadesScreen(),
+              routes: [
+                GoRoute(
+                  path: 'nova',
+                  name: 'entidade-nova',
+                  builder: (context, state) => const EntidadeFormScreen(),
+                ),
+                GoRoute(
+                  path: ':id',
+                  name: 'entidade-editar',
+                  builder: (context, state) =>
+                      EntidadeFormScreen(entidade: state.extra as Entidade?),
                 ),
               ],
             ),

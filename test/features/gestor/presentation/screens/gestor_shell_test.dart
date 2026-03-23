@@ -36,12 +36,13 @@ Widget _buildApp() {
 
 void main() {
   group('GestorShell', () {
-    testWidgets('deve exibir barra de navegação com três destinos', (tester) async {
+    testWidgets('deve exibir barra de navegação com quatro destinos', (tester) async {
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
 
       expect(find.byType(NavigationBar), findsOneWidget);
       expect(find.text('Médiuns'), findsAtLeastNWidgets(1));
+      expect(find.text('Entidades'), findsOneWidget);
       expect(find.text('Sessão'), findsOneWidget);
       expect(find.text('Fila'), findsOneWidget);
     });

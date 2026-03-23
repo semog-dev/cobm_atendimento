@@ -29,6 +29,15 @@ class EntidadesRepository {
     return Entidade.fromMap(data);
   }
 
+  Future<Entidade> criar({required String nome, String? descricao}) async {
+    final data = await _client
+        .from('entidades')
+        .insert({'nome': nome, 'descricao': descricao ?? '', 'ativa': true})
+        .select()
+        .single();
+    return Entidade.fromMap(data);
+  }
+
   Future<void> salvar(Entidade entidade) {
     return _client.from('entidades').upsert(entidade.toMap());
   }

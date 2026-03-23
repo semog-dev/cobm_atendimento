@@ -12,6 +12,8 @@ void main() {
   late MockEntidadesRepository mockRepository;
   late ProviderContainer container;
 
+  setUpAll(() => registerFallbackValue(entidadeFake));
+
   setUp(() {
     mockRepository = MockEntidadesRepository();
     container = ProviderContainer(
@@ -56,7 +58,6 @@ void main() {
 
   group('entidadesAtivasProvider', () {
     test('deve retornar apenas entidades ativas', () async {
-      final inativa = entidadeFake.copyWith(ativa: false);
       when(() => mockRepository.listarAtivas())
           .thenAnswer((_) async => [entidadeFake]);
 
@@ -64,6 +65,72 @@ void main() {
 
       expect(result, [entidadeFake]);
       expect(result.every((e) => e.ativa), isTrue);
+    });
+  });
+
+  group('EntidadesGestorNotifier', () {
+    test('deve carregar lista de entidades ao iniciar', () async {
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [entidadeFake]);
+
+      final result = await container.read(entidadesGestorProvider.future);
+
+      expect(result, [entidadeFake]);
+    });
+
+    test('deve criar entidade e recarregar lista', () async {
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [entidadeFake]);
+      when(() => mockRepository.criar(
+            nome: any(named: 'nome'),
+            descricao: any(named: 'descricao'),
+          )).thenAnswer((_) async => entidadeFake);
+
+      await container.read(entidadesGestorProvider.notifier).criar(
+            nome: 'Exu Tranca Ruas',
+            descricao: 'Guardião das encruzilhadas',
+          );
+
+      verify(() => mockRepository.criar(
+            nome: 'Exu Tranca Ruas',
+            descricao: 'Guardião das encruzilhadas',
+          )).called(1);
+    });
+
+    test('deve atualizar entidade e recarregar lista', () async {
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [entidadeFake]);
+      when(() => mockRepository.salvar(any())).thenAnswer((_) async {});
+
+      await container
+          .read(entidadesGestorProvider.notifier)
+          .atualizar(entidadeFake);
+
+      verify(() => mockRepository.salvar(entidadeFake)).called(1);
+    });
+
+    test('deve desativar entidade ativa ao alternar', () async {
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [entidadeFake]);
+      when(() => mockRepository.desativar(any())).thenAnswer((_) async {});
+
+      await container
+          .read(entidadesGestorProvider.notifier)
+          .alternarAtiva(entidadeFake.id, ativa: true);
+
+      verify(() => mockRepository.desativar(entidadeFake.id)).called(1);
+    });
+
+    test('deve ativar entidade inativa ao alternar', () async {
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [entidadeFake]);
+      when(() => mockRepository.ativar(any())).thenAnswer((_) async {});
+
+      await container
+          .read(entidadesGestorProvider.notifier)
+          .alternarAtiva(entidadeFake.id, ativa: false);
+
+      verify(() => mockRepository.ativar(entidadeFake.id)).called(1);
     });
   });
 }

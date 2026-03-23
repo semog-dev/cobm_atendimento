@@ -23,6 +23,11 @@ class GestorShell extends StatelessWidget {
             label: 'Médiuns',
           ),
           NavigationDestination(
+            icon: Icon(Icons.auto_awesome_outlined),
+            selectedIcon: Icon(Icons.auto_awesome),
+            label: 'Entidades',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.event_outlined),
             selectedIcon: Icon(Icons.event),
             label: 'Sessão',
