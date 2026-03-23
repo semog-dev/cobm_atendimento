@@ -12,6 +12,10 @@ void main() {
   late MockMediunsRepository mockRepository;
   late ProviderContainer container;
 
+  setUpAll(() {
+    registerFallbackValue(mediumFake);
+  });
+
   setUp(() {
     mockRepository = MockMediunsRepository();
     container = ProviderContainer(
@@ -63,6 +67,77 @@ void main() {
 
       expect(result, [mediumFake]);
       expect(result.every((m) => m.ativo), isTrue);
+    });
+  });
+
+  group('MediunsGestorNotifier', () {
+    test('deve carregar lista de médiuns ao inicializar', () async {
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [mediumFake]);
+
+      final result = await container.read(mediunsGestorProvider.future);
+
+      expect(result, [mediumFake]);
+    });
+
+    test('deve criar médium e recarregar lista', () async {
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [mediumFake]);
+      when(() => mockRepository.criar(
+            nome: any(named: 'nome'),
+            fotoUrl: any(named: 'fotoUrl'),
+          )).thenAnswer((_) async => mediumFake);
+
+      await container.read(mediunsGestorProvider.future);
+      await container
+          .read(mediunsGestorProvider.notifier)
+          .criar(nome: 'José da Silva', fotoUrl: null);
+
+      verify(() => mockRepository.criar(
+            nome: 'José da Silva',
+            fotoUrl: null,
+          )).called(1);
+      verify(() => mockRepository.listar()).called(greaterThanOrEqualTo(2));
+    });
+
+    test('deve atualizar médium e recarregar lista', () async {
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [mediumFake]);
+      when(() => mockRepository.salvar(any())).thenAnswer((_) async {});
+
+      await container.read(mediunsGestorProvider.future);
+      await container
+          .read(mediunsGestorProvider.notifier)
+          .atualizar(mediumFake);
+
+      verify(() => mockRepository.salvar(mediumFake)).called(1);
+    });
+
+    test('deve desativar médium ativo ao alternar', () async {
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [mediumFake]);
+      when(() => mockRepository.desativar(any())).thenAnswer((_) async {});
+
+      await container.read(mediunsGestorProvider.future);
+      await container
+          .read(mediunsGestorProvider.notifier)
+          .alternarAtivo(mediumFake.id, ativo: true);
+
+      verify(() => mockRepository.desativar(mediumFake.id)).called(1);
+    });
+
+    test('deve ativar médium inativo ao alternar', () async {
+      final mediumInativo = mediumFake.copyWith(ativo: false);
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [mediumInativo]);
+      when(() => mockRepository.ativar(any())).thenAnswer((_) async {});
+
+      await container.read(mediunsGestorProvider.future);
+      await container
+          .read(mediunsGestorProvider.notifier)
+          .alternarAtivo(mediumInativo.id, ativo: false);
+
+      verify(() => mockRepository.ativar(mediumInativo.id)).called(1);
     });
   });
 }

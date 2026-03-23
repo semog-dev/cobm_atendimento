@@ -30,6 +30,15 @@ class MediunsRepository {
     return Medium.fromMap(data);
   }
 
+  Future<Medium> criar({required String nome, String? fotoUrl}) async {
+    final data = await _client
+        .from('mediuns')
+        .insert({'nome': nome, 'foto_url': fotoUrl, 'ativo': true})
+        .select()
+        .single();
+    return Medium.fromMap(data);
+  }
+
   Future<void> salvar(Medium medium) {
     return _client.from('mediuns').upsert(medium.toMap());
   }

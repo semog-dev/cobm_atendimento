@@ -14,3 +14,37 @@ final mediunsProvider = FutureProvider<List<Medium>>((ref) {
 final mediunsAtivosProvider = FutureProvider<List<Medium>>((ref) {
   return ref.read(mediunsRepositoryProvider).listarAtivos();
 });
+
+final mediunsGestorProvider =
+    AsyncNotifierProvider<MediunsGestorNotifier, List<Medium>>(
+  MediunsGestorNotifier.new,
+);
+
+class MediunsGestorNotifier extends AsyncNotifier<List<Medium>> {
+  MediunsRepository get _repository => ref.read(mediunsRepositoryProvider);
+
+  @override
+  Future<List<Medium>> build() => _repository.listar();
+
+  Future<void> criar({required String nome, String? fotoUrl}) async {
+    await _repository.criar(nome: nome, fotoUrl: fotoUrl);
+    ref.invalidateSelf();
+    await future;
+  }
+
+  Future<void> atualizar(Medium medium) async {
+    await _repository.salvar(medium);
+    ref.invalidateSelf();
+    await future;
+  }
+
+  Future<void> alternarAtivo(String id, {required bool ativo}) async {
+    if (ativo) {
+      await _repository.desativar(id);
+    } else {
+      await _repository.ativar(id);
+    }
+    ref.invalidateSelf();
+    await future;
+  }
+}
