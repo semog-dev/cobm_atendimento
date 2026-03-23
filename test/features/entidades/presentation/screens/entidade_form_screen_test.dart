@@ -27,7 +27,7 @@ void main() {
   setUp(() {
     mockEntidadesRepo = MockEntidadesRepository();
     mockMediunsRepo = MockMediunsRepository();
-    when(() => mockMediunsRepo.listarAtivos())
+    when(() => mockMediunsRepo.listar())
         .thenAnswer((_) async => [mediumFake]);
   });
 

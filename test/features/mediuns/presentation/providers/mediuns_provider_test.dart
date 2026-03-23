@@ -60,8 +60,9 @@ void main() {
 
   group('mediunsAtivosProvider', () {
     test('deve retornar apenas médiuns ativos', () async {
-      when(() => mockRepository.listarAtivos())
-          .thenAnswer((_) async => [mediumFake]);
+      final mediumInativo = mediumFake.copyWith(ativo: false);
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [mediumFake, mediumInativo]);
 
       final result = await container.read(mediunsAtivosProvider.future);
 

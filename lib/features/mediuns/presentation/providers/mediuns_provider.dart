@@ -11,8 +11,9 @@ final mediunsProvider = FutureProvider<List<Medium>>((ref) {
   return ref.read(mediunsRepositoryProvider).listar();
 });
 
-final mediunsAtivosProvider = FutureProvider<List<Medium>>((ref) {
-  return ref.read(mediunsRepositoryProvider).listarAtivos();
+final mediunsAtivosProvider = FutureProvider<List<Medium>>((ref) async {
+  final todos = await ref.watch(mediunsGestorProvider.future);
+  return todos.where((m) => m.ativo).toList();
 });
 
 final mediunsGestorProvider =
