@@ -5,9 +5,12 @@ import 'package:cobm_atendimento/features/auth/domain/models/usuario.dart';
 import 'package:cobm_atendimento/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cobm_atendimento/features/auth/presentation/screens/login_screen.dart';
 import 'package:cobm_atendimento/features/auth/presentation/screens/cadastro_screen.dart';
+import 'package:cobm_atendimento/features/gestor/presentation/screens/gestor_shell.dart';
 import 'package:cobm_atendimento/features/mediuns/domain/models/medium.dart';
 import 'package:cobm_atendimento/features/mediuns/presentation/screens/mediuns_screen.dart';
 import 'package:cobm_atendimento/features/mediuns/presentation/screens/medium_form_screen.dart';
+import 'package:cobm_atendimento/features/sessao/presentation/screens/sessao_screen.dart';
+import 'package:cobm_atendimento/features/fila/presentation/screens/fila_screen.dart';
 
 class RouterNotifier extends ChangeNotifier {
   RouterNotifier(this._ref) {
@@ -20,10 +23,8 @@ class RouterNotifier extends ChangeNotifier {
     final usuario = _ref.read(authProvider);
     final loc = state.matchedLocation;
 
-    // Não autenticado tentando acessar rota de gestor
     if (usuario == null && loc.startsWith('/gestor')) return '/login';
 
-    // Autenticado na tela de login/cadastro → vai para home
     if (usuario != null && (loc == '/login' || loc == '/cadastro')) {
       return usuario.isGestor ? '/gestor/mediuns' : '/login';
     }
@@ -53,23 +54,44 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'cadastro',
         builder: (context, state) => const CadastroScreen(),
       ),
-      GoRoute(
-        path: '/gestor/mediuns',
-        name: 'mediuns',
-        builder: (context, state) => const MediunsScreen(),
-        routes: [
-          GoRoute(
-            path: 'novo',
-            name: 'medium-novo',
-            builder: (context, state) => const MediumFormScreen(),
-          ),
-          GoRoute(
-            path: ':id',
-            name: 'medium-editar',
-            builder: (context, state) => MediumFormScreen(
-              medium: state.extra as Medium?,
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) =>
+            GestorShell(navigationShell: navigationShell),
+        branches: [
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/gestor/mediuns',
+              name: 'mediuns',
+              builder: (context, state) => const MediunsScreen(),
+              routes: [
+                GoRoute(
+                  path: 'novo',
+                  name: 'medium-novo',
+                  builder: (context, state) => const MediumFormScreen(),
+                ),
+                GoRoute(
+                  path: ':id',
+                  name: 'medium-editar',
+                  builder: (context, state) =>
+                      MediumFormScreen(medium: state.extra as Medium?),
+                ),
+              ],
             ),
-          ),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/gestor/sessao',
+              name: 'sessao',
+              builder: (context, state) => const SessaoScreen(),
+            ),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/gestor/fila',
+              name: 'fila',
+              builder: (context, state) => const FilaScreen(),
+            ),
+          ]),
         ],
       ),
     ],

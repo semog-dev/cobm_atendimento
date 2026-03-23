@@ -12,6 +12,7 @@ class MediunsScreen extends ConsumerWidget {
     final state = ref.watch(mediunsGestorProvider);
 
     return Scaffold(
+      key: const Key('mediuns_screen'),
       appBar: AppBar(title: const Text('Médiuns')),
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
