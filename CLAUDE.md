@@ -47,7 +47,7 @@ supabase_flutter: ^2.x
 | id | uuid (PK) | |
 | nome | text | Nome da entidade |
 | descricao | text | |
-| foto_url | text | URL da imagem |
+| ativa | boolean | Se está disponível para atendimento |
 | created_at | timestamptz | |
 
 #### `medium_entidades` — M:N entre médiuns e entidades
