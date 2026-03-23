@@ -1,5 +1,6 @@
 import 'package:cobm_atendimento/features/auth/domain/models/usuario.dart';
 import 'package:cobm_atendimento/features/entidades/domain/models/entidade.dart';
+import 'package:cobm_atendimento/features/mediuns/domain/models/medium.dart';
 
 final usuarioFake = Usuario(
   id: 'uuid-123',
@@ -38,5 +39,21 @@ final entidadeMapFake = {
   'nome': 'Exu Tranca Ruas',
   'descricao': 'Guardião das encruzilhadas',
   'ativa': true,
+  'created_at': '2024-01-01T00:00:00.000',
+};
+
+final mediumFake = Medium(
+  id: 'uuid-med-001',
+  nome: 'José da Silva',
+  fotoUrl: null,
+  ativo: true,
+  createdAt: DateTime(2024, 1, 1),
+);
+
+final mediumMapFake = {
+  'id': 'uuid-med-001',
+  'nome': 'José da Silva',
+  'foto_url': null,
+  'ativo': true,
   'created_at': '2024-01-01T00:00:00.000',
 };
