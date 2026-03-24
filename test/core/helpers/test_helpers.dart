@@ -2,6 +2,7 @@ import 'package:cobm_atendimento/features/auth/domain/models/usuario.dart';
 import 'package:cobm_atendimento/features/entidades/domain/models/entidade.dart';
 import 'package:cobm_atendimento/features/mediuns/domain/models/medium.dart';
 import 'package:cobm_atendimento/features/sessao/domain/models/sessao.dart';
+import 'package:cobm_atendimento/features/sessao/domain/models/medium_entidade.dart';
 import 'package:cobm_atendimento/features/fila/domain/models/entrada_fila.dart';
 
 final usuarioFake = Usuario(
@@ -66,6 +67,14 @@ final sessaoFake = Sessao(
   status: StatusSessao.aberta,
   abertaEm: DateTime(2024, 1, 1, 9, 0),
   encerradaEm: null,
+);
+
+final mediumEntidadeFake = MediumEntidade(
+  id: 'uuid-me-001',
+  mediumId: 'uuid-med-001',
+  entidadeId: 'uuid-ent-001',
+  mediumNome: 'José da Silva',
+  entidadeNome: 'Exu Tranca Ruas',
 );
 
 final entradaFilaFake = EntradaFila(

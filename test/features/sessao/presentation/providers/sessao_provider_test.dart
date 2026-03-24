@@ -53,10 +53,10 @@ void main() {
 
       await container
           .read(sessaoNotifierProvider.notifier)
-          .abrirSessao(gestorId: 'uuid-456');
+          .abrirSessao(gestorId: 'uuid-456', mediumEntidadeIds: {});
 
       final state = container.read(sessaoNotifierProvider);
-      expect(state, sessaoFake);
+      expect(state.value, sessaoFake);
     });
   });
 
@@ -67,6 +67,8 @@ void main() {
         encerradaEm: DateTime(2024, 1, 1, 12, 0),
       );
 
+      when(() => mockRepository.buscarSessaoAberta())
+          .thenAnswer((_) async => null);
       when(() => mockRepository.encerrarSessao(any()))
           .thenAnswer((_) async => encerrada);
 
@@ -75,7 +77,7 @@ void main() {
           .encerrarSessao('uuid-sess-001');
 
       final state = container.read(sessaoNotifierProvider);
-      expect(state, isNull);
+      expect(state.value, isNull);
     });
   });
 }

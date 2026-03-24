@@ -1,5 +1,6 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:cobm_atendimento/features/sessao/domain/models/sessao.dart';
+import 'package:cobm_atendimento/features/sessao/domain/models/medium_entidade.dart';
 
 class SessaoRepository {
   SessaoRepository({required SupabaseClient client}) : _client = client;
@@ -41,5 +42,38 @@ class SessaoRepository {
         .select()
         .order('aberta_em', ascending: false);
     return (data as List).map((e) => Sessao.fromMap(e)).toList();
+  }
+
+  Future<List<MediumEntidade>> listarMediumEntidades() async {
+    final data = await _client
+        .from('medium_entidades')
+        .select(
+            'id, medium_id, entidade_id, mediuns!inner(nome), entidades!inner(nome)')
+        .eq('mediuns.ativo', true)
+        .eq('entidades.ativa', true);
+    return (data as List).map((e) => MediumEntidade.fromMap(e)).toList();
+  }
+
+  Future<void> vincularMediumEntidade({
+    required String sessaoId,
+    required String mediumEntidadeId,
+  }) {
+    return _client.from('sessao_medium_entidades').insert({
+      'sessao_id': sessaoId,
+      'medium_entidade_id': mediumEntidadeId,
+    });
+  }
+
+  Future<List<MediumEntidade>> listarMediumEntidadesDaSessao(
+      String sessaoId) async {
+    final data = await _client
+        .from('sessao_medium_entidades')
+        .select(
+            'medium_entidades(id, medium_id, entidade_id, mediuns(nome), entidades(nome))')
+        .eq('sessao_id', sessaoId);
+    return (data as List)
+        .map((e) =>
+            MediumEntidade.fromMap(e['medium_entidades'] as Map<String, dynamic>))
+        .toList();
   }
 }

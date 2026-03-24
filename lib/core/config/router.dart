@@ -13,6 +13,7 @@ import 'package:cobm_atendimento/features/entidades/domain/models/entidade.dart'
 import 'package:cobm_atendimento/features/entidades/presentation/screens/entidades_screen.dart';
 import 'package:cobm_atendimento/features/entidades/presentation/screens/entidade_form_screen.dart';
 import 'package:cobm_atendimento/features/sessao/presentation/screens/sessao_screen.dart';
+import 'package:cobm_atendimento/features/sessao/presentation/screens/abrir_sessao_screen.dart';
 import 'package:cobm_atendimento/features/fila/presentation/screens/fila_screen.dart';
 
 class RouterNotifier extends ChangeNotifier {
@@ -106,6 +107,13 @@ final routerProvider = Provider<GoRouter>((ref) {
               path: '/gestor/sessao',
               name: 'sessao',
               builder: (context, state) => const SessaoScreen(),
+              routes: [
+                GoRoute(
+                  path: 'abrir',
+                  name: 'sessao-abrir',
+                  builder: (context, state) => const AbrirSessaoScreen(),
+                ),
+              ],
             ),
           ]),
           StatefulShellBranch(routes: [
