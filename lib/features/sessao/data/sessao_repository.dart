@@ -47,11 +47,18 @@ class SessaoRepository {
   Future<List<MediumEntidade>> listarMediumEntidades() async {
     final data = await _client
         .from('medium_entidades')
-        .select(
-            'id, medium_id, entidade_id, mediuns!inner(nome), entidades!inner(nome)')
-        .eq('mediuns.ativo', true)
-        .eq('entidades.ativa', true);
-    return (data as List).map((e) => MediumEntidade.fromMap(e)).toList();
+        .select('id, medium_id, entidade_id, mediuns(nome, ativo), entidades(nome, ativa)');
+    return (data as List)
+        .where((e) {
+          final m = e['mediuns'] as Map<String, dynamic>?;
+          final en = e['entidades'] as Map<String, dynamic>?;
+          return m != null &&
+              en != null &&
+              (m['ativo'] as bool) &&
+              (en['ativa'] as bool);
+        })
+        .map((e) => MediumEntidade.fromMap(e))
+        .toList();
   }
 
   Future<void> vincularMediumEntidade({

@@ -13,7 +13,7 @@ final sessaoAtualProvider = FutureProvider<Sessao?>((ref) {
 });
 
 final mediumEntidadesDisponiveisProvider =
-    FutureProvider<List<MediumEntidade>>((ref) {
+    FutureProvider.autoDispose<List<MediumEntidade>>((ref) {
   return ref.read(sessaoRepositoryProvider).listarMediumEntidades();
 });
 
