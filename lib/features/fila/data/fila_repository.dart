@@ -94,4 +94,13 @@ class FilaRepository {
     if (list.isEmpty) return null;
     return EntradaFila.fromMap(list.first as Map<String, dynamic>);
   }
+
+  Stream<List<EntradaFila>> listarPorSessaoStream(String sessaoId) {
+    return _client
+        .from('fila')
+        .stream(primaryKey: ['id'])
+        .eq('sessao_id', sessaoId)
+        .order('posicao')
+        .map((data) => data.map((e) => EntradaFila.fromMap(e)).toList());
+  }
 }

@@ -47,6 +47,96 @@ void main() {
     });
   });
 
+  group('filaRealtimeProvider', () {
+    test('deve emitir lista da fila via stream', () async {
+      when(() => mockRepository.listarPorSessaoStream(any()))
+          .thenAnswer((_) => Stream.value([entradaFilaFake]));
+
+      final result = await container
+          .read(filaRealtimeProvider('uuid-sess-001').future);
+
+      expect(result, [entradaFilaFake]);
+    });
+  });
+
+  group('FilaNotifier', () {
+    test('should retornar lista vazia ao inicializar', () {
+      final state = container.read(filaNotifierProvider);
+      expect(state, isEmpty);
+    });
+
+    test('should carregar fila da sessão', () async {
+      when(() => mockRepository.listarPorSessao(any()))
+          .thenAnswer((_) async => [entradaFilaFake]);
+
+      await container
+          .read(filaNotifierProvider.notifier)
+          .carregarFila('uuid-sess-001');
+
+      final state = container.read(filaNotifierProvider);
+      expect(state, [entradaFilaFake]);
+    });
+
+    test('should chamar proximo na fila', () async {
+      final chamada = entradaFilaFake.copyWith(
+        status: StatusFila.emAtendimento,
+        chamadoEm: DateTime(2024, 1, 1, 9, 5),
+      );
+      when(() => mockRepository.entrarNaFila(
+            sessaoId: any(named: 'sessaoId'),
+            clienteId: any(named: 'clienteId'),
+            mediumEntidadeId: any(named: 'mediumEntidadeId'),
+            posicao: any(named: 'posicao'),
+          )).thenAnswer((_) async => entradaFilaFake);
+      when(() => mockRepository.chamarProximo(any()))
+          .thenAnswer((_) async => chamada);
+
+      await container.read(filaNotifierProvider.notifier).entrarNaFila(
+            sessaoId: 'uuid-sess-001',
+            clienteId: 'uuid-123',
+            mediumEntidadeId: 'uuid-me-001',
+            posicao: 1,
+          );
+      await container
+          .read(filaNotifierProvider.notifier)
+          .chamarProximo('uuid-fila-001');
+
+      final state = container.read(filaNotifierProvider);
+      expect(state.any((e) => e.id == 'uuid-fila-001' && e.isEmAtendimento),
+          isTrue);
+    });
+
+    test('should encerrar atendimento', () async {
+      final encerrada = entradaFilaFake.copyWith(
+        status: StatusFila.concluido,
+        encerradoEm: DateTime(2024, 1, 1, 9, 30),
+        duracaoSegundos: 1800,
+      );
+      when(() => mockRepository.entrarNaFila(
+            sessaoId: any(named: 'sessaoId'),
+            clienteId: any(named: 'clienteId'),
+            mediumEntidadeId: any(named: 'mediumEntidadeId'),
+            posicao: any(named: 'posicao'),
+          )).thenAnswer((_) async => entradaFilaFake);
+      when(() => mockRepository.encerrarAtendimento(any()))
+          .thenAnswer((_) async => encerrada);
+
+      await container.read(filaNotifierProvider.notifier).entrarNaFila(
+            sessaoId: 'uuid-sess-001',
+            clienteId: 'uuid-123',
+            mediumEntidadeId: 'uuid-me-001',
+            posicao: 1,
+          );
+      await container
+          .read(filaNotifierProvider.notifier)
+          .encerrarAtendimento('uuid-fila-001');
+
+      final state = container.read(filaNotifierProvider);
+      expect(state.any((e) => e.id == 'uuid-fila-001' && e.isConcluido),
+          isTrue);
+    });
+  });
+
   group('FilaNotifier.entrarNaFila', () {
     test('deve adicionar entrada ao estado quando entrar na fila', () async {
       when(() => mockRepository.entrarNaFila(

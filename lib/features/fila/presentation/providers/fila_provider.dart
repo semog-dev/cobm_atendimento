@@ -12,6 +12,12 @@ final filaPorSessaoProvider =
   return ref.read(filaRepositoryProvider).listarPorSessao(sessaoId);
 });
 
+final filaRealtimeProvider =
+    StreamProvider.autoDispose.family<List<EntradaFila>, String>(
+        (ref, sessaoId) {
+  return ref.read(filaRepositoryProvider).listarPorSessaoStream(sessaoId);
+});
+
 final filaNotifierProvider =
     NotifierProvider<FilaNotifier, List<EntradaFila>>(FilaNotifier.new);
 
