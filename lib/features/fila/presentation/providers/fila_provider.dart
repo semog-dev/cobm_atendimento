@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cobm_atendimento/features/fila/data/fila_repository.dart';
 import 'package:cobm_atendimento/features/fila/domain/models/entrada_fila.dart';
@@ -7,42 +8,40 @@ final filaRepositoryProvider = Provider<FilaRepository>((ref) {
   return FilaRepository(client: supabase);
 });
 
-final filaPorSessaoProvider =
-    FutureProvider.family<List<EntradaFila>, String>((ref, sessaoId) {
-  return ref.read(filaRepositoryProvider).listarPorSessao(sessaoId);
-});
-
-final filaRealtimeProvider =
-    StreamProvider.autoDispose.family<List<EntradaFila>, String>(
-        (ref, sessaoId) {
-  return ref.read(filaRepositoryProvider).listarPorSessaoStream(sessaoId);
-});
-
 final filaNotifierProvider =
     NotifierProvider<FilaNotifier, List<EntradaFila>>(FilaNotifier.new);
 
 class FilaNotifier extends Notifier<List<EntradaFila>> {
   FilaRepository get _repository => ref.read(filaRepositoryProvider);
+  StreamSubscription<List<EntradaFila>>? _sub;
 
   @override
-  List<EntradaFila> build() => [];
+  List<EntradaFila> build() {
+    ref.onDispose(() => _sub?.cancel());
+    return [];
+  }
 
-  Future<void> carregarFila(String sessaoId) async {
-    final fila = await _repository.listarPorSessao(sessaoId);
-    state = fila;
+  void assinarSessao(String sessaoId) {
+    _sub?.cancel();
+    _sub = _repository.listarPorSessaoStream(sessaoId).listen((fila) {
+      state = fila;
+    });
   }
 
   Future<void> entrarNaFila({
     required String sessaoId,
     required String clienteId,
     required String mediumEntidadeId,
-    required int posicao,
   }) async {
+    final ultimaPosicao = await _repository.ultimaPosicao(
+      sessaoId: sessaoId,
+      mediumEntidadeId: mediumEntidadeId,
+    );
     final entrada = await _repository.entrarNaFila(
       sessaoId: sessaoId,
       clienteId: clienteId,
       mediumEntidadeId: mediumEntidadeId,
-      posicao: posicao,
+      posicao: ultimaPosicao + 1,
     );
     state = [...state, entrada];
   }
@@ -55,11 +54,6 @@ class FilaNotifier extends Notifier<List<EntradaFila>> {
   Future<void> chamarProximo(String id) async {
     final chamado = await _repository.chamarProximo(id);
     state = state.map((e) => e.id == id ? chamado : e).toList();
-  }
-
-  Future<void> iniciarAtendimento(String id) async {
-    final iniciado = await _repository.iniciarAtendimento(id);
-    state = state.map((e) => e.id == id ? iniciado : e).toList();
   }
 
   Future<void> encerrarAtendimento(String id) async {

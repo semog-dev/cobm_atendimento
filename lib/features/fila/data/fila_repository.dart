@@ -12,14 +12,18 @@ class FilaRepository {
     required String mediumEntidadeId,
     required int posicao,
   }) async {
-    final data = await _client.from('fila').insert({
-      'sessao_id': sessaoId,
-      'cliente_id': clienteId,
-      'medium_entidade_id': mediumEntidadeId,
-      'posicao': posicao,
-      'status': StatusFila.aguardando.toJson(),
-      'criado_em': DateTime.now().toIso8601String(),
-    }).select().single();
+    final data = await _client
+        .from('fila')
+        .insert({
+          'sessao_id': sessaoId,
+          'cliente_id': clienteId,
+          'medium_entidade_id': mediumEntidadeId,
+          'posicao': posicao,
+          'status': StatusFila.aguardando.toJson(),
+          'criado_em': DateTime.now().toIso8601String(),
+        })
+        .select()
+        .single();
     return EntradaFila.fromMap(data);
   }
 
@@ -34,17 +38,25 @@ class FilaRepository {
   }
 
   Future<EntradaFila> chamarProximo(String id) async {
-    final data = await _client.from('fila').update({
-      'status': StatusFila.emAtendimento.toJson(),
-      'chamado_em': DateTime.now().toIso8601String(),
-    }).eq('id', id).select().single();
+    final data = await _client
+        .from('fila')
+        .update({
+          'status': StatusFila.emAtendimento.toJson(),
+          'chamado_em': DateTime.now().toIso8601String(),
+        })
+        .eq('id', id)
+        .select()
+        .single();
     return EntradaFila.fromMap(data);
   }
 
   Future<EntradaFila> iniciarAtendimento(String id) async {
-    final data = await _client.from('fila').update({
-      'iniciado_em': DateTime.now().toIso8601String(),
-    }).eq('id', id).select().single();
+    final data = await _client
+        .from('fila')
+        .update({'iniciado_em': DateTime.now().toIso8601String()})
+        .eq('id', id)
+        .select()
+        .single();
     return EntradaFila.fromMap(data);
   }
 
@@ -61,11 +73,16 @@ class FilaRepository {
     final encerradoEm = DateTime.now();
     final duracao = encerradoEm.difference(inicio).inSeconds;
 
-    final data = await _client.from('fila').update({
-      'status': StatusFila.concluido.toJson(),
-      'encerrado_em': encerradoEm.toIso8601String(),
-      'duracao_segundos': duracao,
-    }).eq('id', id).select().single();
+    final data = await _client
+        .from('fila')
+        .update({
+          'status': StatusFila.concluido.toJson(),
+          'encerrado_em': encerradoEm.toIso8601String(),
+          'duracao_segundos': duracao,
+        })
+        .eq('id', id)
+        .select()
+        .single();
     return EntradaFila.fromMap(data);
   }
 
@@ -104,5 +121,21 @@ class FilaRepository {
         .eq('sessao_id', sessaoId)
         .order('posicao')
         .map((data) => data.map((e) => EntradaFila.fromMap(e)).toList());
+  }
+
+  Future<int> ultimaPosicao({
+    required String sessaoId,
+    required String mediumEntidadeId,
+  }) async {
+    final data = await _client
+        .from('fila')
+        .select('posicao')
+        .eq('sessao_id', sessaoId)
+        .eq('medium_entidade_id', mediumEntidadeId)
+        .order('posicao', ascending: false)
+        .limit(1);
+    final list = data as List;
+    if (list.isEmpty) return 0;
+    return (list.first as Map<String, dynamic>)['posicao'] as int;
   }
 }

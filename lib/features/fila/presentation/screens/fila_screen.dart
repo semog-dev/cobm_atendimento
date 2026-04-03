@@ -12,6 +12,14 @@ class FilaScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final sessaoState = ref.watch(sessaoNotifierProvider);
 
+    ref.listen(sessaoNotifierProvider, (_, next) {
+      next.whenData((sessao) {
+        if (sessao != null) {
+          ref.read(filaNotifierProvider.notifier).assinarSessao(sessao.id);
+        }
+      });
+    });
+
     return sessaoState.when(
       loading: () => const Scaffold(
         key: Key('fila_screen'),
@@ -29,47 +37,32 @@ class FilaScreen extends ConsumerWidget {
           );
         }
 
-        final filaState = ref.watch(filaRealtimeProvider(sessao.id));
+        final fila = ref.watch(filaNotifierProvider);
+        final aguardando = fila.where((e) => e.isAguardando).toList();
 
-        return filaState.when(
-          loading: () => const Scaffold(
-            key: Key('fila_screen'),
-            body: Center(child: CircularProgressIndicator()),
-          ),
-          error: (e, _) => Scaffold(
-            key: const Key('fila_screen'),
-            body: Center(child: Text('Erro ao carregar fila: $e')),
-          ),
-          data: (fila) {
-            final aguardando =
-                fila.where((e) => e.isAguardando).toList();
-
-            return Scaffold(
-              key: const Key('fila_screen'),
-              appBar: AppBar(title: const Text('Fila de Atendimento')),
-              body: fila.isEmpty
-                  ? const Center(child: Text('Nenhuma entrada na fila'))
-                  : ListView.builder(
-                      itemCount: fila.length,
-                      itemBuilder: (context, index) {
-                        final entrada = fila[index];
-                        return _EntradaFilaCard(entrada: entrada);
-                      },
-                    ),
-              floatingActionButton: aguardando.isNotEmpty
-                  ? FloatingActionButton.extended(
-                      key: const Key('btn_chamar_proximo'),
-                      onPressed: () {
-                        ref
-                            .read(filaNotifierProvider.notifier)
-                            .chamarProximo(aguardando.first.id);
-                      },
-                      label: const Text('Chamar próximo'),
-                      icon: const Icon(Icons.campaign),
-                    )
-                  : null,
-            );
-          },
+        return Scaffold(
+          key: const Key('fila_screen'),
+          appBar: AppBar(title: const Text('Fila de Atendimento')),
+          body: fila.isEmpty
+              ? const Center(child: Text('Nenhuma entrada na fila'))
+              : ListView.builder(
+                  itemCount: fila.length,
+                  itemBuilder: (context, index) {
+                    return _EntradaFilaCard(entrada: fila[index]);
+                  },
+                ),
+          floatingActionButton: aguardando.isNotEmpty
+              ? FloatingActionButton.extended(
+                  key: const Key('btn_chamar_proximo'),
+                  onPressed: () {
+                    ref
+                        .read(filaNotifierProvider.notifier)
+                        .chamarProximo(aguardando.first.id);
+                  },
+                  label: const Text('Chamar próximo'),
+                  icon: const Icon(Icons.campaign),
+                )
+              : null,
         );
       },
     );

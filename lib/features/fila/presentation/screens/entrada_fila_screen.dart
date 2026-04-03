@@ -20,8 +20,9 @@ class _EntradaFilaScreenState extends ConsumerState<EntradaFilaScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediumEntidadesState =
-        ref.watch(mediumEntidadesDaSessaoProvider(widget.sessaoId));
+    final mediumEntidadesState = ref.watch(
+      mediumEntidadesDaSessaoProvider(widget.sessaoId),
+    );
 
     return Scaffold(
       key: const Key('entrada_fila_screen'),
@@ -68,14 +69,12 @@ class _EntradaFilaScreenState extends ConsumerState<EntradaFilaScreen> {
     final usuario = ref.read(authProvider);
     if (usuario == null || _selecionado == null) return;
 
-    final filaAtual = ref.read(filaNotifierProvider);
-    final posicao = filaAtual.length + 1;
-
-    await ref.read(filaNotifierProvider.notifier).entrarNaFila(
+    await ref
+        .read(filaNotifierProvider.notifier)
+        .entrarNaFila(
           sessaoId: widget.sessaoId,
           clienteId: usuario.id,
           mediumEntidadeId: _selecionado!.id,
-          posicao: posicao,
         );
 
     if (mounted) context.go('/cliente/fila');

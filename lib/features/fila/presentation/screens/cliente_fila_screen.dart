@@ -14,6 +14,14 @@ class ClienteFilaScreen extends ConsumerWidget {
     final sessaoState = ref.watch(sessaoNotifierProvider);
     final usuario = ref.watch(authProvider);
 
+    ref.listen(sessaoNotifierProvider, (_, next) {
+      next.whenData((sessao) {
+        if (sessao != null) {
+          ref.read(filaNotifierProvider.notifier).assinarSessao(sessao.id);
+        }
+      });
+    });
+
     return Scaffold(
       key: const Key('cliente_fila_screen'),
       appBar: AppBar(title: const Text('Minha Posição na Fila')),
@@ -37,62 +45,55 @@ class ClienteFilaScreen extends ConsumerWidget {
             );
           }
 
-          final filaState = ref.watch(filaRealtimeProvider(sessao.id));
+          final fila = ref.watch(filaNotifierProvider);
+          final minhaEntrada = usuario != null
+              ? fila.where((e) => e.clienteId == usuario.id).firstOrNull
+              : null;
 
-          return filaState.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text('Erro ao carregar fila: $e')),
-            data: (fila) {
-              final minhaEntrada = usuario != null
-                  ? fila.where((e) => e.clienteId == usuario.id).firstOrNull
-                  : null;
-
-              if (minhaEntrada == null ||
-                  minhaEntrada.isConcluido ||
-                  minhaEntrada.isCancelado) {
-                return Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('Você não está na fila'),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => context.go(
-                          '/cliente/entrar-fila',
-                          extra: sessao.id,
-                        ),
-                        child: const Text('Entrar na fila'),
-                      ),
-                    ],
+          if (minhaEntrada == null ||
+              minhaEntrada.isConcluido ||
+              minhaEntrada.isCancelado) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Você não está na fila'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.go(
+                      '/cliente/entrar-fila',
+                      extra: sessao.id,
+                    ),
+                    child: const Text('Entrar na fila'),
                   ),
-                );
-              }
+                ],
+              ),
+            );
+          }
 
-              return Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (minhaEntrada.isEmAtendimento)
-                      _CardEmAtendimento()
-                    else
-                      _CardAguardando(entrada: minhaEntrada),
-                    if (minhaEntrada.isAguardando) ...[
-                      const SizedBox(height: 16),
-                      OutlinedButton(
-                        onPressed: () => ref
-                            .read(filaNotifierProvider.notifier)
-                            .cancelarEntrada(minhaEntrada.id),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.red,
-                        ),
-                        child: const Text('Cancelar'),
-                      ),
-                    ],
-                  ],
-                ),
-              );
-            },
+          return Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (minhaEntrada.isEmAtendimento)
+                  _CardEmAtendimento()
+                else
+                  _CardAguardando(entrada: minhaEntrada),
+                if (minhaEntrada.isAguardando) ...[
+                  const SizedBox(height: 16),
+                  OutlinedButton(
+                    onPressed: () => ref
+                        .read(filaNotifierProvider.notifier)
+                        .cancelarEntrada(minhaEntrada.id),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red,
+                    ),
+                    child: const Text('Cancelar'),
+                  ),
+                ],
+              ],
+            ),
           );
         },
       ),
