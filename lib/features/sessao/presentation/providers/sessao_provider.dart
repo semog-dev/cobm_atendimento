@@ -12,6 +12,10 @@ final sessaoAtualProvider = FutureProvider<Sessao?>((ref) {
   return ref.read(sessaoRepositoryProvider).buscarSessaoAberta();
 });
 
+final historicoSessoesProvider = FutureProvider<List<Sessao>>((ref) {
+  return ref.read(sessaoRepositoryProvider).listar();
+});
+
 final mediumEntidadesDisponiveisProvider =
     FutureProvider.autoDispose<List<MediumEntidade>>((ref) {
   return ref.read(sessaoRepositoryProvider).listarMediumEntidades();
