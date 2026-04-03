@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:cobm_atendimento/features/fila/domain/models/entrada_fila.dart';
 import 'package:cobm_atendimento/features/fila/presentation/providers/fila_provider.dart';
 import 'package:cobm_atendimento/features/sessao/domain/models/medium_entidade.dart';
+import 'package:cobm_atendimento/features/sessao/presentation/providers/sessao_provider.dart';
 
 class FilaDetalheScreen extends ConsumerWidget {
   const FilaDetalheScreen({super.key, required this.mediumEntidade});
@@ -12,6 +13,7 @@ class FilaDetalheScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final sessaoState = ref.watch(sessaoNotifierProvider);
     final fila = ref.watch(filaNotifierProvider);
     final entradas = fila
         .where((e) => e.mediumEntidadeId == mediumEntidade.id)
@@ -19,6 +21,8 @@ class FilaDetalheScreen extends ConsumerWidget {
       ..sort((a, b) => a.posicao.compareTo(b.posicao));
     final aguardando = entradas.where((e) => e.isAguardando).toList()
       ..sort((a, b) => a.posicao.compareTo(b.posicao));
+
+    final sessaoId = sessaoState.value?.id;
 
     return Scaffold(
       key: const Key('fila_detalhe_screen'),
@@ -46,18 +50,37 @@ class FilaDetalheScreen extends ConsumerWidget {
               itemBuilder: (context, index) =>
                   _EntradaFilaCard(entrada: entradas[index]),
             ),
-      floatingActionButton: aguardando.isNotEmpty
-          ? FloatingActionButton.extended(
-              key: const Key('btn_chamar_proximo'),
-              onPressed: () {
-                ref
-                    .read(filaNotifierProvider.notifier)
-                    .chamarProximo(aguardando.first.id);
-              },
-              label: const Text('Chamar próximo'),
-              icon: const Icon(Icons.campaign),
-            )
-          : null,
+      floatingActionButton: sessaoId == null
+          ? null
+          : Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                FloatingActionButton(
+                  key: const Key('btn_adicionar_cliente'),
+                  heroTag: 'adicionar_cliente',
+                  onPressed: () => context.push(
+                    '/gestor/fila/registrar-cliente',
+                    extra: {'sessaoId': sessaoId, 'me': mediumEntidade},
+                  ),
+                  child: const Icon(Icons.person_add),
+                ),
+                if (aguardando.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  FloatingActionButton.extended(
+                    key: const Key('btn_chamar_proximo'),
+                    heroTag: 'chamar_proximo',
+                    onPressed: () {
+                      ref
+                          .read(filaNotifierProvider.notifier)
+                          .chamarProximo(aguardando.first.id);
+                    },
+                    label: const Text('Chamar próximo'),
+                    icon: const Icon(Icons.campaign),
+                  ),
+                ],
+              ],
+            ),
     );
   }
 }
@@ -86,6 +109,11 @@ class _EntradaFilaCard extends ConsumerWidget {
                 const SizedBox(width: 12),
                 _StatusBadge(status: entrada.status),
               ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              entrada.clienteNome,
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             if (entrada.isEmAtendimento) ...[
               const SizedBox(height: 8),

@@ -30,7 +30,7 @@ class FilaNotifier extends Notifier<List<EntradaFila>> {
 
   Future<void> entrarNaFila({
     required String sessaoId,
-    required String clienteId,
+    required String clienteNome,
     required String mediumEntidadeId,
   }) async {
     final ultimaPosicao = await _repository.ultimaPosicao(
@@ -39,7 +39,7 @@ class FilaNotifier extends Notifier<List<EntradaFila>> {
     );
     final entrada = await _repository.entrarNaFila(
       sessaoId: sessaoId,
-      clienteId: clienteId,
+      clienteNome: clienteNome,
       mediumEntidadeId: mediumEntidadeId,
       posicao: ultimaPosicao + 1,
     );

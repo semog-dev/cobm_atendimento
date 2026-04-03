@@ -6,7 +6,7 @@ void main() {
     final entrada = EntradaFila(
       id: 'uuid-fila-001',
       sessaoId: 'uuid-sess-001',
-      clienteId: 'uuid-123',
+      clienteNome: 'João Silva',
       mediumEntidadeId: 'uuid-me-001',
       posicao: 1,
       status: StatusFila.aguardando,
@@ -20,7 +20,7 @@ void main() {
     test('deve criar entrada na fila com todos os campos', () {
       expect(entrada.id, 'uuid-fila-001');
       expect(entrada.sessaoId, 'uuid-sess-001');
-      expect(entrada.clienteId, 'uuid-123');
+      expect(entrada.clienteNome, 'João Silva');
       expect(entrada.mediumEntidadeId, 'uuid-me-001');
       expect(entrada.posicao, 1);
       expect(entrada.status, StatusFila.aguardando);
@@ -36,8 +36,7 @@ void main() {
       expect(entrada.isCancelado, isFalse);
     });
 
-    test('deve retornar true para isEmAtendimento quando status é em_atendimento',
-        () {
+    test('deve retornar true para isEmAtendimento quando status é em_atendimento', () {
       final emAtendimento = entrada.copyWith(status: StatusFila.emAtendimento);
       expect(emAtendimento.isEmAtendimento, isTrue);
       expect(emAtendimento.isAguardando, isFalse);
@@ -62,7 +61,7 @@ void main() {
       final outra = EntradaFila(
         id: 'uuid-fila-001',
         sessaoId: 'uuid-sess-001',
-        clienteId: 'uuid-123',
+        clienteNome: 'João Silva',
         mediumEntidadeId: 'uuid-me-001',
         posicao: 1,
         status: StatusFila.aguardando,
@@ -89,7 +88,7 @@ void main() {
       final map = entrada.toMap();
       expect(map['id'], 'uuid-fila-001');
       expect(map['sessao_id'], 'uuid-sess-001');
-      expect(map['cliente_id'], 'uuid-123');
+      expect(map['cliente_nome'], 'João Silva');
       expect(map['medium_entidade_id'], 'uuid-me-001');
       expect(map['posicao'], 1);
       expect(map['status'], 'aguardando');
@@ -100,7 +99,7 @@ void main() {
       final map = {
         'id': 'uuid-fila-001',
         'sessao_id': 'uuid-sess-001',
-        'cliente_id': 'uuid-123',
+        'cliente_nome': 'João Silva',
         'medium_entidade_id': 'uuid-me-001',
         'posicao': 1,
         'status': 'aguardando',
@@ -112,6 +111,7 @@ void main() {
       };
       final fromMap = EntradaFila.fromMap(map);
       expect(fromMap.id, 'uuid-fila-001');
+      expect(fromMap.clienteNome, 'João Silva');
       expect(fromMap.status, StatusFila.aguardando);
       expect(fromMap.chamadoEm, isNull);
     });

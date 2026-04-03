@@ -8,7 +8,7 @@ class FilaRepository {
 
   Future<EntradaFila> entrarNaFila({
     required String sessaoId,
-    required String clienteId,
+    required String clienteNome,
     required String mediumEntidadeId,
     required int posicao,
   }) async {
@@ -16,7 +16,7 @@ class FilaRepository {
         .from('fila')
         .insert({
           'sessao_id': sessaoId,
-          'cliente_id': clienteId,
+          'cliente_nome': clienteNome,
           'medium_entidade_id': mediumEntidadeId,
           'posicao': posicao,
           'status': StatusFila.aguardando.toJson(),

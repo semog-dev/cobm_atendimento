@@ -24,7 +24,7 @@ class EntradaFila {
   const EntradaFila({
     required this.id,
     required this.sessaoId,
-    required this.clienteId,
+    required this.clienteNome,
     required this.mediumEntidadeId,
     required this.posicao,
     required this.status,
@@ -37,7 +37,7 @@ class EntradaFila {
 
   final String id;
   final String sessaoId;
-  final String clienteId;
+  final String clienteNome;
   final String mediumEntidadeId;
   final int posicao;
   final StatusFila status;
@@ -57,7 +57,7 @@ class EntradaFila {
   EntradaFila copyWith({
     String? id,
     String? sessaoId,
-    String? clienteId,
+    String? clienteNome,
     String? mediumEntidadeId,
     int? posicao,
     StatusFila? status,
@@ -70,7 +70,7 @@ class EntradaFila {
     return EntradaFila(
       id: id ?? this.id,
       sessaoId: sessaoId ?? this.sessaoId,
-      clienteId: clienteId ?? this.clienteId,
+      clienteNome: clienteNome ?? this.clienteNome,
       mediumEntidadeId: mediumEntidadeId ?? this.mediumEntidadeId,
       posicao: posicao ?? this.posicao,
       status: status ?? this.status,
@@ -86,7 +86,7 @@ class EntradaFila {
     return {
       'id': id,
       'sessao_id': sessaoId,
-      'cliente_id': clienteId,
+      'cliente_nome': clienteNome,
       'medium_entidade_id': mediumEntidadeId,
       'posicao': posicao,
       'status': status.toJson(),
@@ -102,7 +102,7 @@ class EntradaFila {
     return EntradaFila(
       id: map['id'] as String,
       sessaoId: map['sessao_id'] as String,
-      clienteId: map['cliente_id'] as String,
+      clienteNome: (map['cliente_nome'] as String?) ?? '',
       mediumEntidadeId: map['medium_entidade_id'] as String,
       posicao: map['posicao'] as int,
       status: StatusFila.fromJson(map['status'] as String),
@@ -120,7 +120,7 @@ class EntradaFila {
       other is EntradaFila &&
           id == other.id &&
           sessaoId == other.sessaoId &&
-          clienteId == other.clienteId &&
+          clienteNome == other.clienteNome &&
           mediumEntidadeId == other.mediumEntidadeId &&
           posicao == other.posicao &&
           status == other.status &&
@@ -132,7 +132,7 @@ class EntradaFila {
 
   @override
   int get hashCode => Object.hash(
-        id, sessaoId, clienteId, mediumEntidadeId, posicao,
+        id, sessaoId, clienteNome, mediumEntidadeId, posicao,
         status, criadoEm, chamadoEm, iniciadoEm, encerradoEm, duracaoSegundos,
       );
 }

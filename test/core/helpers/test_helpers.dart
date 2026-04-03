@@ -80,7 +80,7 @@ final mediumEntidadeFake = MediumEntidade(
 final entradaFilaFake = EntradaFila(
   id: 'uuid-fila-001',
   sessaoId: 'uuid-sess-001',
-  clienteId: 'uuid-123',
+  clienteNome: 'João Silva',
   mediumEntidadeId: 'uuid-me-001',
   posicao: 1,
   status: StatusFila.aguardando,

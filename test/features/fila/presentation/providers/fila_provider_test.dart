@@ -101,14 +101,14 @@ void main() {
           )).thenAnswer((_) async => 0);
       when(() => mockRepository.entrarNaFila(
             sessaoId: any(named: 'sessaoId'),
-            clienteId: any(named: 'clienteId'),
+            clienteNome: any(named: 'clienteNome'),
             mediumEntidadeId: any(named: 'mediumEntidadeId'),
             posicao: any(named: 'posicao'),
           )).thenAnswer((_) async => entradaFilaFake);
 
       await container.read(filaNotifierProvider.notifier).entrarNaFila(
             sessaoId: 'uuid-sess-001',
-            clienteId: 'uuid-123',
+            clienteNome: 'João Silva',
             mediumEntidadeId: 'uuid-me-001',
           );
 

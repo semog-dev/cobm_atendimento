@@ -5,6 +5,7 @@ import 'package:cobm_atendimento/features/auth/domain/models/usuario.dart';
 import 'package:cobm_atendimento/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cobm_atendimento/features/auth/presentation/screens/login_screen.dart';
 import 'package:cobm_atendimento/features/auth/presentation/screens/cadastro_screen.dart';
+import 'package:cobm_atendimento/features/auth/presentation/screens/profile_screen.dart';
 import 'package:cobm_atendimento/features/gestor/presentation/screens/gestor_shell.dart';
 import 'package:cobm_atendimento/features/mediuns/domain/models/medium.dart';
 import 'package:cobm_atendimento/features/mediuns/presentation/screens/mediuns_screen.dart';
@@ -12,16 +13,14 @@ import 'package:cobm_atendimento/features/mediuns/presentation/screens/medium_fo
 import 'package:cobm_atendimento/features/entidades/domain/models/entidade.dart';
 import 'package:cobm_atendimento/features/entidades/presentation/screens/entidades_screen.dart';
 import 'package:cobm_atendimento/features/entidades/presentation/screens/entidade_form_screen.dart';
+import 'package:cobm_atendimento/features/sessao/domain/models/medium_entidade.dart';
 import 'package:cobm_atendimento/features/sessao/presentation/screens/sessao_screen.dart';
 import 'package:cobm_atendimento/features/sessao/presentation/screens/abrir_sessao_screen.dart';
-import 'package:cobm_atendimento/features/auth/presentation/screens/profile_screen.dart';
 import 'package:cobm_atendimento/features/fila/domain/models/entrada_fila.dart';
 import 'package:cobm_atendimento/features/fila/presentation/screens/fila_screen.dart';
 import 'package:cobm_atendimento/features/fila/presentation/screens/fila_detalhe_screen.dart';
-import 'package:cobm_atendimento/features/sessao/domain/models/medium_entidade.dart';
+import 'package:cobm_atendimento/features/fila/presentation/screens/registrar_cliente_screen.dart';
 import 'package:cobm_atendimento/features/fila/presentation/screens/atendimento_screen.dart';
-import 'package:cobm_atendimento/features/fila/presentation/screens/cliente_fila_screen.dart';
-import 'package:cobm_atendimento/features/fila/presentation/screens/entrada_fila_screen.dart';
 
 class RouterNotifier extends ChangeNotifier {
   RouterNotifier(this._ref) {
@@ -35,10 +34,9 @@ class RouterNotifier extends ChangeNotifier {
     final loc = state.matchedLocation;
 
     if (usuario == null && loc.startsWith('/gestor')) return '/login';
-    if (usuario == null && loc.startsWith('/cliente')) return '/login';
 
     if (usuario != null && (loc == '/login' || loc == '/cadastro')) {
-      return usuario.isGestor ? '/gestor/mediuns' : '/cliente/fila';
+      return '/gestor/mediuns';
     }
 
     return null;
@@ -71,17 +69,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'atendimento',
         builder: (context, state) =>
             AtendimentoScreen(entrada: state.extra as EntradaFila),
-      ),
-      GoRoute(
-        path: '/cliente/fila',
-        name: 'cliente-fila',
-        builder: (context, state) => const ClienteFilaScreen(),
-      ),
-      GoRoute(
-        path: '/cliente/entrar-fila',
-        name: 'cliente-entrar-fila',
-        builder: (context, state) =>
-            EntradaFilaScreen(sessaoId: state.extra as String),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
@@ -153,6 +140,17 @@ final routerProvider = Provider<GoRouter>((ref) {
                   builder: (context, state) => FilaDetalheScreen(
                     mediumEntidade: state.extra as MediumEntidade,
                   ),
+                ),
+                GoRoute(
+                  path: 'registrar-cliente',
+                  name: 'fila-registrar-cliente',
+                  builder: (context, state) {
+                    final extra = state.extra as Map<String, dynamic>;
+                    return RegistrarClienteScreen(
+                      sessaoId: extra['sessaoId'] as String,
+                      mediumEntidade: extra['me'] as MediumEntidade,
+                    );
+                  },
                 ),
               ],
             ),
