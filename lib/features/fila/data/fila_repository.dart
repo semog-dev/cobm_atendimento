@@ -51,13 +51,15 @@ class FilaRepository {
   Future<EntradaFila> encerrarAtendimento(String id) async {
     final iniciadoData = await _client
         .from('fila')
-        .select('iniciado_em')
+        .select('iniciado_em, chamado_em')
         .eq('id', id)
         .single();
 
-    final iniciadoEm = DateTime.parse(iniciadoData['iniciado_em'] as String);
+    final inicio = iniciadoData['iniciado_em'] != null
+        ? DateTime.parse(iniciadoData['iniciado_em'] as String)
+        : DateTime.parse(iniciadoData['chamado_em'] as String);
     final encerradoEm = DateTime.now();
-    final duracao = encerradoEm.difference(iniciadoEm).inSeconds;
+    final duracao = encerradoEm.difference(inicio).inSeconds;
 
     final data = await _client.from('fila').update({
       'status': StatusFila.concluido.toJson(),
