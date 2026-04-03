@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cobm_atendimento/features/fila/domain/models/entrada_fila.dart';
 import 'package:cobm_atendimento/features/fila/presentation/providers/fila_provider.dart';
 import 'package:cobm_atendimento/features/sessao/presentation/providers/sessao_provider.dart';
 
@@ -38,102 +37,119 @@ class FilaScreen extends ConsumerWidget {
         }
 
         final fila = ref.watch(filaNotifierProvider);
-        final aguardando = fila.where((e) => e.isAguardando).toList();
+        final meState = ref.watch(mediumEntidadesDaSessaoProvider(sessao.id));
 
         return Scaffold(
           key: const Key('fila_screen'),
-          appBar: AppBar(title: const Text('Fila de Atendimento')),
-          body: fila.isEmpty
-              ? const Center(child: Text('Nenhuma entrada na fila'))
-              : ListView.builder(
-                  itemCount: fila.length,
-                  itemBuilder: (context, index) {
-                    return _EntradaFilaCard(entrada: fila[index]);
-                  },
-                ),
-          floatingActionButton: aguardando.isNotEmpty
-              ? FloatingActionButton.extended(
-                  key: const Key('btn_chamar_proximo'),
-                  onPressed: () {
-                    ref
-                        .read(filaNotifierProvider.notifier)
-                        .chamarProximo(aguardando.first.id);
-                  },
-                  label: const Text('Chamar próximo'),
-                  icon: const Icon(Icons.campaign),
-                )
-              : null,
+          appBar: AppBar(title: const Text('Filas de Atendimento')),
+          body: meState.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Center(child: Text('Erro: $e')),
+            data: (mediumEntidades) {
+              if (mediumEntidades.isEmpty) {
+                return const Center(
+                  child: Text('Nenhuma fila disponível nesta sessão'),
+                );
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: mediumEntidades.length,
+                itemBuilder: (context, index) {
+                  final me = mediumEntidades[index];
+                  final entradas =
+                      fila.where((e) => e.mediumEntidadeId == me.id).toList();
+                  final aguardando =
+                      entradas.where((e) => e.isAguardando).length;
+                  final emAtendimento =
+                      entradas.where((e) => e.isEmAtendimento).length;
+
+                  return Card(
+                    key: Key('fila_card_${me.id}'),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () => context.push(
+                        '/gestor/fila/detalhe',
+                        extra: me,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            const CircleAvatar(
+                              child: Icon(Icons.auto_awesome),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    me.entidadeNome,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium,
+                                  ),
+                                  Text(
+                                    me.mediumNome,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Wrap(
+                                    spacing: 6,
+                                    children: [
+                                      if (emAtendimento > 0)
+                                        _Badge(
+                                          label: 'Em atendimento',
+                                          color: Colors.green,
+                                        ),
+                                      _Badge(
+                                        label: '$aguardando aguardando',
+                                        color: aguardando > 0
+                                            ? Colors.orange
+                                            : Colors.grey,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.chevron_right),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
         );
       },
     );
   }
 }
 
-class _EntradaFilaCard extends ConsumerWidget {
-  const _EntradaFilaCard({required this.entrada});
+class _Badge extends StatelessWidget {
+  const _Badge({required this.label, required this.color});
 
-  final EntradaFila entrada;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Card(
-      key: Key('entrada_fila_${entrada.id}'),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Posição ${entrada.posicao}',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 4),
-                  _StatusBadge(status: entrada.status),
-                ],
-              ),
-            ),
-            if (entrada.isEmAtendimento)
-              ElevatedButton(
-                key: Key('btn_atendimento_${entrada.id}'),
-                onPressed: () =>
-                    context.push('/gestor/atendimento', extra: entrada),
-                child: const Text('Ver atendimento'),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _StatusBadge extends StatelessWidget {
-  const _StatusBadge({required this.status});
-
-  final StatusFila status;
+  final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final (label, color) = switch (status) {
-      StatusFila.aguardando => ('Aguardando', Colors.orange),
-      StatusFila.emAtendimento => ('Em atendimento', Colors.green),
-      StatusFila.concluido => ('Concluído', Colors.blue),
-      StatusFila.cancelado => ('Cancelado', Colors.red),
-    };
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: color),
       ),
       child: Text(
         label,
-        style: TextStyle(color: color, fontSize: 12),
+        style: TextStyle(color: color, fontSize: 11),
       ),
     );
   }

@@ -16,6 +16,8 @@ import 'package:cobm_atendimento/features/sessao/presentation/screens/sessao_scr
 import 'package:cobm_atendimento/features/sessao/presentation/screens/abrir_sessao_screen.dart';
 import 'package:cobm_atendimento/features/fila/domain/models/entrada_fila.dart';
 import 'package:cobm_atendimento/features/fila/presentation/screens/fila_screen.dart';
+import 'package:cobm_atendimento/features/fila/presentation/screens/fila_detalhe_screen.dart';
+import 'package:cobm_atendimento/features/sessao/domain/models/medium_entidade.dart';
 import 'package:cobm_atendimento/features/fila/presentation/screens/atendimento_screen.dart';
 import 'package:cobm_atendimento/features/fila/presentation/screens/cliente_fila_screen.dart';
 import 'package:cobm_atendimento/features/fila/presentation/screens/entrada_fila_screen.dart';
@@ -143,6 +145,15 @@ final routerProvider = Provider<GoRouter>((ref) {
               path: '/gestor/fila',
               name: 'fila',
               builder: (context, state) => const FilaScreen(),
+              routes: [
+                GoRoute(
+                  path: 'detalhe',
+                  name: 'fila-detalhe',
+                  builder: (context, state) => FilaDetalheScreen(
+                    mediumEntidade: state.extra as MediumEntidade,
+                  ),
+                ),
+              ],
             ),
           ]),
         ],
