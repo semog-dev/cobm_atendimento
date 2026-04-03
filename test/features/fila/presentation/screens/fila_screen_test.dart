@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cobm_atendimento/features/fila/data/fila_repository.dart';
-import 'package:cobm_atendimento/features/fila/domain/models/entrada_fila.dart';
 import 'package:cobm_atendimento/features/fila/presentation/providers/fila_provider.dart';
 import 'package:cobm_atendimento/features/fila/presentation/screens/fila_screen.dart';
 import 'package:cobm_atendimento/features/sessao/data/sessao_repository.dart';
@@ -25,16 +24,16 @@ void main() {
     mockSessaoRepository = MockSessaoRepository();
   });
 
-  Widget buildWidget({String initialLocation = '/'}) {
+  Widget buildWidget() {
     final router = GoRouter(
-      initialLocation: initialLocation,
+      initialLocation: '/',
       routes: [
         GoRoute(path: '/', builder: (ctx, state) => const FilaScreen()),
         GoRoute(
-          path: '/gestor/atendimento',
+          path: '/gestor/fila/detalhe',
           builder: (ctx, state) => const Scaffold(
-            key: Key('atendimento_screen'),
-            body: Text('Atendimento em curso'),
+            key: Key('fila_detalhe_screen'),
+            body: Text('Detalhe'),
           ),
         ),
       ],
@@ -63,68 +62,39 @@ void main() {
       expect(find.text('Nenhuma sessão aberta'), findsOneWidget);
     });
 
-    testWidgets('should mostrar lista da fila quando sessão está aberta',
-        (tester) async {
-      when(() => mockSessaoRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => sessaoFake);
-      when(() => mockFilaRepository.listarPorSessaoStream(any()))
-          .thenAnswer((_) => Stream.value([entradaFilaFake]));
-      when(() => mockFilaRepository.listarPorSessao(any()))
-          .thenAnswer((_) async => [entradaFilaFake]);
-
-      await tester.pumpWidget(buildWidget());
-      await tester.pumpAndSettle();
-
-      expect(find.text('Posição 1'), findsOneWidget);
-    });
-
-    testWidgets('should chamar proximo ao pressionar btn_chamar_proximo',
-        (tester) async {
-      when(() => mockSessaoRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => sessaoFake);
-      when(() => mockFilaRepository.listarPorSessaoStream(any()))
-          .thenAnswer((_) => Stream.value([entradaFilaFake]));
-      when(() => mockFilaRepository.listarPorSessao(any()))
-          .thenAnswer((_) async => [entradaFilaFake]);
-      when(() => mockFilaRepository.chamarProximo(any()))
-          .thenAnswer((_) async => entradaFilaFake.copyWith(
-                status: StatusFila.emAtendimento,
-                chamadoEm: DateTime(2024, 1, 1, 9, 5),
-              ));
-
-      await tester.pumpWidget(buildWidget());
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byKey(const Key('btn_chamar_proximo')));
-      await tester.pumpAndSettle();
-
-      verify(() => mockFilaRepository.chamarProximo(entradaFilaFake.id))
-          .called(1);
-    });
-
     testWidgets(
-        'should navegar para atendimento ao pressionar entrada em atendimento',
+        'should mostrar cards de medium_entidade quando sessão está aberta',
         (tester) async {
-      final entradaEmAtendimento = entradaFilaFake.copyWith(
-        status: StatusFila.emAtendimento,
-        chamadoEm: DateTime(2024, 1, 1, 9, 5),
-      );
-
       when(() => mockSessaoRepository.buscarSessaoAberta())
           .thenAnswer((_) async => sessaoFake);
+      when(() => mockSessaoRepository.listarMediumEntidadesDaSessao(any()))
+          .thenAnswer((_) async => [mediumEntidadeFake]);
       when(() => mockFilaRepository.listarPorSessaoStream(any()))
-          .thenAnswer((_) => Stream.value([entradaEmAtendimento]));
-      when(() => mockFilaRepository.listarPorSessao(any()))
-          .thenAnswer((_) async => [entradaEmAtendimento]);
+          .thenAnswer((_) => Stream.value([entradaFilaFake]));
 
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
-      await tester.tap(
-          find.byKey(Key('btn_atendimento_${entradaEmAtendimento.id}')));
+      expect(find.text(mediumEntidadeFake.entidadeNome), findsOneWidget);
+      expect(find.text(mediumEntidadeFake.mediumNome), findsOneWidget);
+    });
+
+    testWidgets('should navegar para detalhe ao tocar no card',
+        (tester) async {
+      when(() => mockSessaoRepository.buscarSessaoAberta())
+          .thenAnswer((_) async => sessaoFake);
+      when(() => mockSessaoRepository.listarMediumEntidadesDaSessao(any()))
+          .thenAnswer((_) async => [mediumEntidadeFake]);
+      when(() => mockFilaRepository.listarPorSessaoStream(any()))
+          .thenAnswer((_) => Stream.value([entradaFilaFake]));
+
+      await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('atendimento_screen')), findsOneWidget);
+      await tester.tap(find.byKey(Key('fila_card_${mediumEntidadeFake.id}')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('fila_detalhe_screen')), findsOneWidget);
     });
   });
 }

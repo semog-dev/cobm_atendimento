@@ -92,6 +92,10 @@ void main() {
     testWidgets('should entrar na fila ao confirmar seleção', (tester) async {
       when(() => mockSessaoRepository.listarMediumEntidadesDaSessao(any()))
           .thenAnswer((_) async => [mediumEntidadeFake]);
+      when(() => mockFilaRepository.ultimaPosicao(
+            sessaoId: any(named: 'sessaoId'),
+            mediumEntidadeId: any(named: 'mediumEntidadeId'),
+          )).thenAnswer((_) async => 0);
       when(() => mockFilaRepository.entrarNaFila(
             sessaoId: any(named: 'sessaoId'),
             clienteId: any(named: 'clienteId'),
@@ -112,7 +116,7 @@ void main() {
             sessaoId: sessaoFake.id,
             clienteId: any(named: 'clienteId'),
             mediumEntidadeId: mediumEntidadeFake.id,
-            posicao: any(named: 'posicao'),
+            posicao: 1,
           )).called(1);
     });
   });
