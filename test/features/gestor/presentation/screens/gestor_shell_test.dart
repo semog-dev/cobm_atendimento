@@ -36,7 +36,7 @@ Widget _buildApp() {
 
 void main() {
   group('GestorShell', () {
-    testWidgets('deve exibir barra de navegação com quatro destinos', (tester) async {
+    testWidgets('deve exibir barra de navegação com cinco destinos', (tester) async {
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
 
@@ -45,6 +45,7 @@ void main() {
       expect(find.text('Entidades'), findsOneWidget);
       expect(find.text('Sessão'), findsOneWidget);
       expect(find.text('Fila'), findsOneWidget);
+      expect(find.text('Perfil'), findsOneWidget);
     });
 
     testWidgets('deve exibir tela de médiuns como destino inicial', (tester) async {

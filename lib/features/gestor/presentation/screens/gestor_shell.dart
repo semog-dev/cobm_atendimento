@@ -37,6 +37,11 @@ class GestorShell extends StatelessWidget {
             selectedIcon: Icon(Icons.format_list_bulleted),
             label: 'Fila',
           ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Perfil',
+          ),
         ],
       ),
     );

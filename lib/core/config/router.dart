@@ -14,6 +14,7 @@ import 'package:cobm_atendimento/features/entidades/presentation/screens/entidad
 import 'package:cobm_atendimento/features/entidades/presentation/screens/entidade_form_screen.dart';
 import 'package:cobm_atendimento/features/sessao/presentation/screens/sessao_screen.dart';
 import 'package:cobm_atendimento/features/sessao/presentation/screens/abrir_sessao_screen.dart';
+import 'package:cobm_atendimento/features/auth/presentation/screens/profile_screen.dart';
 import 'package:cobm_atendimento/features/fila/domain/models/entrada_fila.dart';
 import 'package:cobm_atendimento/features/fila/presentation/screens/fila_screen.dart';
 import 'package:cobm_atendimento/features/fila/presentation/screens/fila_detalhe_screen.dart';
@@ -154,6 +155,13 @@ final routerProvider = Provider<GoRouter>((ref) {
                   ),
                 ),
               ],
+            ),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/gestor/perfil',
+              name: 'perfil',
+              builder: (context, state) => const ProfileScreen(),
             ),
           ]),
         ],
