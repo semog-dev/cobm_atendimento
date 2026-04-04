@@ -44,9 +44,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Platform folders (gerados pelo Flutter)
-/android/
-/ios/
+# Platform folders não utilizados
 /linux/
 /macos/
 /web/

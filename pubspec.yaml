@@ -30,6 +30,14 @@ dependencies:
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
 
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/app_icon.png"
+  remove_alpha_ios: true
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -44,6 +52,7 @@ dev_dependencies:
 
   # Tests
   mocktail: ^1.0.4
+  flutter_launcher_icons: ^0.14.3
 
 flutter:
   uses-material-design: true
