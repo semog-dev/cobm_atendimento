@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:cobm_atendimento/features/auth/presentation/providers/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -128,11 +127,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   ),
                                 )
                               : const Text('Entrar'),
-                        ),
-                        TextButton(
-                          key: const Key('btn_cadastro'),
-                          onPressed: () => context.push('/cadastro'),
-                          child: const Text('Não tem conta? Cadastre-se'),
                         ),
                       ],
                     ),

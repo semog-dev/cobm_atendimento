@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:cobm_atendimento/features/auth/domain/models/usuario.dart';
 import 'package:cobm_atendimento/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cobm_atendimento/features/auth/presentation/screens/login_screen.dart';
-import 'package:cobm_atendimento/features/auth/presentation/screens/cadastro_screen.dart';
 import 'package:cobm_atendimento/features/auth/presentation/screens/profile_screen.dart';
 import 'package:cobm_atendimento/features/gestor/presentation/screens/gestor_shell.dart';
 import 'package:cobm_atendimento/features/mediuns/domain/models/medium.dart';
@@ -35,7 +34,7 @@ class RouterNotifier extends ChangeNotifier {
 
     if (usuario == null && loc.startsWith('/gestor')) return '/login';
 
-    if (usuario != null && (loc == '/login' || loc == '/cadastro')) {
+    if (usuario != null && loc == '/login') {
       return '/gestor/mediuns';
     }
 
@@ -58,11 +57,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/login',
         name: 'login',
         builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: '/cadastro',
-        name: 'cadastro',
-        builder: (context, state) => const CadastroScreen(),
       ),
       GoRoute(
         path: '/gestor/atendimento',

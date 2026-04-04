@@ -57,8 +57,10 @@ class AuthNotifier extends Notifier<Usuario?> {
     required String email,
     required String password,
   }) async {
-    final response =
-        await _repository.cadastrar(email: email, password: password);
+    await _repository.cadastrar(email: email, password: password);
+    // Faz login explícito para garantir que o JWT está ativo antes de
+    // inserir em profiles (signUp pode não propagar a sessão imediatamente)
+    final response = await _repository.login(email: email, password: password);
     final userId = response.user!.id;
     await _repository.salvarPerfil(
       id: userId,
