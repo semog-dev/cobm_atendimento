@@ -49,6 +49,8 @@ class _RegistrarClienteScreenState
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       key: const Key('registrar_cliente_screen'),
       appBar: AppBar(title: const Text('Registrar Cliente')),
@@ -59,37 +61,77 @@ class _RegistrarClienteScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+              // Card da fila com borda lateral colorida
+              Container(
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color:
+                        colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  ),
+                ),
+                child: IntrinsicHeight(
+                  child: Row(
                     children: [
-                      Text(
-                        'Fila selecionada',
-                        style: Theme.of(context).textTheme.labelMedium,
+                      Container(
+                        width: 4,
+                        decoration: BoxDecoration(
+                          color: colorScheme.primary,
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(16),
+                            bottomLeft: Radius.circular(16),
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        widget.mediumEntidade.entidadeNome,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      Text(
-                        widget.mediumEntidade.mediumNome,
-                        style: Theme.of(context).textTheme.bodySmall,
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Fila selecionada',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.8,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                widget.mediumEntidade.entidadeNome,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.w600),
+                              ),
+                              Text(
+                                widget.mediumEntidade.mediumNome,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall
+                                    ?.copyWith(
+                                      color: colorScheme.onSurface
+                                          .withValues(alpha: 0.5),
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
               TextFormField(
                 key: const Key('nome_cliente_field'),
                 controller: _nomeController,
                 decoration: const InputDecoration(
                   labelText: 'Nome do cliente',
                   prefixIcon: Icon(Icons.person_outline),
-                  border: OutlineInputBorder(),
                 ),
                 textCapitalization: TextCapitalization.words,
                 autofocus: true,
@@ -101,7 +143,14 @@ class _RegistrarClienteScreenState
                 key: const Key('btn_registrar_cliente'),
                 onPressed: _carregando ? null : _registrar,
                 child: _carregando
-                    ? const CircularProgressIndicator()
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
                     : const Text('Adicionar à fila'),
               ),
             ],

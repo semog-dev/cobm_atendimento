@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cobm_atendimento/features/fila/presentation/providers/fila_provider.dart';
 import 'package:cobm_atendimento/features/sessao/presentation/providers/sessao_provider.dart';
@@ -10,6 +11,7 @@ class FilaScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final sessaoState = ref.watch(sessaoNotifierProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     ref.listen(sessaoNotifierProvider, (_, next) {
       next.whenData((sessao) {
@@ -30,9 +32,27 @@ class FilaScreen extends ConsumerWidget {
       ),
       data: (sessao) {
         if (sessao == null) {
-          return const Scaffold(
-            key: Key('fila_screen'),
-            body: Center(child: Text('Nenhuma sessão aberta')),
+          return Scaffold(
+            key: const Key('fila_screen'),
+            body: Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.event_busy_outlined,
+                    size: 64,
+                    color: colorScheme.onSurface.withValues(alpha: 0.2),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Nenhuma sessão aberta',
+                    style: TextStyle(
+                      color: colorScheme.onSurface.withValues(alpha: 0.4),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           );
         }
 
@@ -52,9 +72,10 @@ class FilaScreen extends ConsumerWidget {
                 );
               }
 
-              return ListView.builder(
+              return ListView.separated(
                 padding: const EdgeInsets.all(16),
                 itemCount: mediumEntidades.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 16),
                 itemBuilder: (context, index) {
                   final me = mediumEntidades[index];
                   final entradas =
@@ -64,61 +85,89 @@ class FilaScreen extends ConsumerWidget {
                   final emAtendimento =
                       entradas.where((e) => e.isEmAtendimento).length;
 
-                  return Card(
+                  return InkWell(
                     key: Key('fila_card_${me.id}'),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: () => context.push(
-                        '/gestor/fila/detalhe',
-                        extra: me,
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () => context.push('/gestor/fila/detalhe', extra: me),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: colorScheme.surface,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: emAtendimento > 0
+                              ? Colors.green.withValues(alpha: 0.4)
+                              : colorScheme.outlineVariant
+                                  .withValues(alpha: 0.5),
+                          width: emAtendimento > 0 ? 1.5 : 1,
+                        ),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          children: [
-                            const CircleAvatar(
-                              child: Icon(Icons.auto_awesome),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 48,
+                            height: 48,
+                            decoration: BoxDecoration(
+                              color:
+                                  colorScheme.primary.withValues(alpha: 0.08),
+                              shape: BoxShape.circle,
                             ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    me.entidadeNome,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium,
-                                  ),
-                                  Text(
-                                    me.mediumNome,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall,
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Wrap(
-                                    spacing: 6,
-                                    children: [
-                                      if (emAtendimento > 0)
-                                        _Badge(
-                                          label: 'Em atendimento',
-                                          color: Colors.green,
-                                        ),
-                                      _Badge(
-                                        label: '$aguardando aguardando',
-                                        color: aguardando > 0
-                                            ? Colors.orange
-                                            : Colors.grey,
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                            child: Center(
+                              child: FaIcon(
+                                FontAwesomeIcons.ghost,
+                                color: colorScheme.primary,
+                                size: 20,
                               ),
                             ),
-                            const Icon(Icons.chevron_right),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  me.entidadeNome,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(fontWeight: FontWeight.w600),
+                                ),
+                                Text(
+                                  me.mediumNome,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                        color: colorScheme.onSurface
+                                            .withValues(alpha: 0.5),
+                                      ),
+                                ),
+                                const SizedBox(height: 6),
+                                Wrap(
+                                  spacing: 6,
+                                  children: [
+                                    if (emAtendimento > 0)
+                                      _Badge(
+                                        label: 'Em atendimento',
+                                        color: Colors.green,
+                                      ),
+                                    _Badge(
+                                      label: '$aguardando aguardando',
+                                      color: aguardando > 0
+                                          ? Colors.orange
+                                          : colorScheme.onSurface
+                                              .withValues(alpha: 0.3),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right,
+                            color: colorScheme.onSurface.withValues(alpha: 0.3),
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -141,15 +190,18 @@ class _Badge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color),
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         label,
-        style: TextStyle(color: color, fontSize: 11),
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

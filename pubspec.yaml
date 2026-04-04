@@ -13,6 +13,8 @@ dependencies:
 
   # UI
   cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.10+1
+  font_awesome_flutter: ^10.8.0
 
   # State management
   flutter_riverpod: ^2.6.1
@@ -45,3 +47,13 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/
+
+  fonts: []
+    # Exemplo:
+    # - family: MinhaFonte
+    #   fonts:
+    #     - asset: assets/fonts/MinhaFonte-Regular.ttf

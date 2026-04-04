@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 class GestorShell extends StatelessWidget {
@@ -16,28 +17,28 @@ class GestorShell extends StatelessWidget {
           index,
           initialLocation: index == navigationShell.currentIndex,
         ),
-        destinations: const [
-          NavigationDestination(
+        destinations: [
+          const NavigationDestination(
             icon: Icon(Icons.people_outline),
             selectedIcon: Icon(Icons.people),
             label: 'Médiuns',
           ),
           NavigationDestination(
-            icon: Icon(Icons.auto_awesome_outlined),
-            selectedIcon: Icon(Icons.auto_awesome),
+            icon: FaIcon(FontAwesomeIcons.ghost, size: 20),
+            selectedIcon: FaIcon(FontAwesomeIcons.ghost, size: 20),
             label: 'Entidades',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.event_outlined),
             selectedIcon: Icon(Icons.event),
             label: 'Sessão',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.format_list_bulleted_outlined),
             selectedIcon: Icon(Icons.format_list_bulleted),
             label: 'Fila',
           ),
-          NavigationDestination(
+          const NavigationDestination(
             icon: Icon(Icons.person_outline),
             selectedIcon: Icon(Icons.person),
             label: 'Perfil',

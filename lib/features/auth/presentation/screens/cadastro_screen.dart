@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:cobm_atendimento/features/auth/presentation/providers/auth_provider.dart';
 
 class CadastroScreen extends ConsumerStatefulWidget {
@@ -51,8 +52,17 @@ class _CadastroScreenState extends ConsumerState<CadastroScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Cadastro')),
+      appBar: AppBar(
+        title: SvgPicture.asset(
+          'assets/images/cobm_logo.svg',
+          height: 32,
+          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+        ),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -62,7 +72,10 @@ class _CadastroScreenState extends ConsumerState<CadastroScreen> {
               TextFormField(
                 key: const Key('nome_field'),
                 controller: _nomeController,
-                decoration: const InputDecoration(labelText: 'Nome'),
+                decoration: const InputDecoration(
+                  labelText: 'Nome',
+                  prefixIcon: Icon(Icons.person_outlined),
+                ),
                 validator: (v) =>
                     v == null || v.isEmpty ? 'Informe o nome' : null,
               ),
@@ -71,7 +84,10 @@ class _CadastroScreenState extends ConsumerState<CadastroScreen> {
                 key: const Key('telefone_field'),
                 controller: _telefoneController,
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(labelText: 'Telefone'),
+                decoration: const InputDecoration(
+                  labelText: 'Telefone',
+                  prefixIcon: Icon(Icons.phone_outlined),
+                ),
                 validator: (v) =>
                     v == null || v.isEmpty ? 'Informe o telefone' : null,
               ),
@@ -80,7 +96,10 @@ class _CadastroScreenState extends ConsumerState<CadastroScreen> {
                 key: const Key('email_field'),
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'E-mail'),
+                decoration: const InputDecoration(
+                  labelText: 'E-mail',
+                  prefixIcon: Icon(Icons.email_outlined),
+                ),
                 validator: (v) =>
                     v == null || v.isEmpty ? 'Informe o e-mail' : null,
               ),
@@ -89,21 +108,40 @@ class _CadastroScreenState extends ConsumerState<CadastroScreen> {
                 key: const Key('senha_field'),
                 controller: _senhaController,
                 obscureText: true,
-                decoration: const InputDecoration(labelText: 'Senha'),
+                decoration: const InputDecoration(
+                  labelText: 'Senha',
+                  prefixIcon: Icon(Icons.lock_outlined),
+                ),
                 validator: (v) =>
                     v == null || v.isEmpty ? 'Informe a senha' : null,
               ),
               const SizedBox(height: 8),
               if (_erro != null)
-                Text(_erro!, style: const TextStyle(color: Colors.red)),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Text(
+                    _erro!,
+                    style: TextStyle(color: colorScheme.error, fontSize: 13),
+                  ),
+                ),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   key: const Key('btn_cadastrar'),
                   onPressed: _carregando ? null : _cadastrar,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
                   child: _carregando
-                      ? const CircularProgressIndicator()
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
                       : const Text('Cadastrar'),
                 ),
               ),
