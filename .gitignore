@@ -44,6 +44,17 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Platform folders (gerados pelo Flutter)
+/android/
+/ios/
+/linux/
+/macos/
+/web/
+/windows/
+
+# Metadata
+.metadata
+
 # Environment variables
 .env.dev
 .env.prod
