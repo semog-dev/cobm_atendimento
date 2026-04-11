@@ -252,12 +252,9 @@ class _SessaoAbertaView extends ConsumerWidget {
               backgroundColor: Colors.red.shade700,
               foregroundColor: Colors.white,
             ),
-            onPressed: () async {
-              await ref
-                  .read(sessaoNotifierProvider.notifier)
-                  .encerrarSessao(sessao.id);
-              ref.invalidate(historicoSessoesProvider);
-            },
+            onPressed: () => ref
+                .read(sessaoNotifierProvider.notifier)
+                .encerrarSessao(sessao.id),
             child: const Text('Encerrar Sessão'),
           ),
         ],

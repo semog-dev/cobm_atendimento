@@ -56,5 +56,6 @@ class SessaoNotifier extends AsyncNotifier<Sessao?> {
     state = const AsyncLoading();
     await _repository.encerrarSessao(id);
     state = const AsyncData(null);
+    ref.invalidate(historicoSessoesProvider);
   }
 }
