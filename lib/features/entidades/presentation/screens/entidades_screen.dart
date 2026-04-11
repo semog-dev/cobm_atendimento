@@ -17,13 +17,25 @@ class EntidadesScreen extends ConsumerWidget {
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Erro: $e')),
-        data: (entidades) => entidades.isEmpty
-            ? const Center(child: Text('Nenhuma entidade cadastrada.'))
-            : ListView.builder(
-                itemCount: entidades.length,
-                itemBuilder: (context, index) {
-                  final entidade = entidades[index];
-                  return ListTile(
+        data: (entidades) => RefreshIndicator(
+          onRefresh: () async => ref.invalidate(entidadesGestorProvider),
+          child: entidades.isEmpty
+              ? ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      child: const Center(
+                          child: Text('Nenhuma entidade cadastrada.')),
+                    ),
+                  ],
+                )
+              : ListView.builder(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: entidades.length,
+                  itemBuilder: (context, index) {
+                    final entidade = entidades[index];
+                    return ListTile(
                     leading: FaIcon(
                       FontAwesomeIcons.ghost,
                       size: 18,
@@ -55,6 +67,7 @@ class EntidadesScreen extends ConsumerWidget {
                   );
                 },
               ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         key: const Key('fab_nova_entidade'),

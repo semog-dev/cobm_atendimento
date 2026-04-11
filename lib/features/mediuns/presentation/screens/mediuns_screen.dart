@@ -17,18 +17,30 @@ class MediunsScreen extends ConsumerWidget {
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Erro: $e')),
-        data: (mediuns) => mediuns.isEmpty
-            ? const Center(
-                key: Key('empty_message'),
-                child: Text('Nenhum médium cadastrado'),
-              )
-            : ListView.builder(
-                key: const Key('mediuns_list'),
-                itemCount: mediuns.length,
-                itemBuilder: (context, index) {
-                  return _MediumTile(medium: mediuns[index]);
-                },
-              ),
+        data: (mediuns) => RefreshIndicator(
+          onRefresh: () async => ref.invalidate(mediunsGestorProvider),
+          child: mediuns.isEmpty
+              ? ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      child: const Center(
+                        key: Key('empty_message'),
+                        child: Text('Nenhum médium cadastrado'),
+                      ),
+                    ),
+                  ],
+                )
+              : ListView.builder(
+                  key: const Key('mediuns_list'),
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: mediuns.length,
+                  itemBuilder: (context, index) {
+                    return _MediumTile(medium: mediuns[index]);
+                  },
+                ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         key: const Key('btn_adicionar'),

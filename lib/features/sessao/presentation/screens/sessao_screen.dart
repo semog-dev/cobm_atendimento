@@ -21,8 +21,14 @@ class SessaoScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Erro: $e')),
         data: (sessao) {
-          return CustomScrollView(
-            slivers: [
+          return RefreshIndicator(
+            onRefresh: () async {
+              ref.invalidate(sessaoNotifierProvider);
+              ref.invalidate(historicoSessoesProvider);
+            },
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
               SliverToBoxAdapter(
                 child: sessao == null
                     ? _SessaoFechadaView()
@@ -75,6 +81,7 @@ class SessaoScreen extends ConsumerWidget {
                 ),
               ),
             ],
+            ),
           );
         },
       ),

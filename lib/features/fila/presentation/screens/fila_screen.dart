@@ -66,17 +66,30 @@ class FilaScreen extends ConsumerWidget {
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) => Center(child: Text('Erro: $e')),
             data: (mediumEntidades) {
-              if (mediumEntidades.isEmpty) {
-                return const Center(
-                  child: Text('Nenhuma fila disponível nesta sessão'),
-                );
-              }
-
-              return ListView.separated(
-                padding: const EdgeInsets.all(16),
-                itemCount: mediumEntidades.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 16),
-                itemBuilder: (context, index) {
+              return RefreshIndicator(
+                onRefresh: () async {
+                  ref.invalidate(sessaoNotifierProvider);
+                  ref.invalidate(mediumEntidadesDaSessaoProvider(sessao.id));
+                },
+                child: mediumEntidades.isEmpty
+                    ? ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.7,
+                            child: const Center(
+                              child:
+                                  Text('Nenhuma fila disponível nesta sessão'),
+                            ),
+                          ),
+                        ],
+                      )
+                    : ListView.separated(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(16),
+                        itemCount: mediumEntidades.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 16),
+                        itemBuilder: (context, index) {
                   final me = mediumEntidades[index];
                   final entradas =
                       fila.where((e) => e.mediumEntidadeId == me.id).toList();
@@ -172,6 +185,7 @@ class FilaScreen extends ConsumerWidget {
                     ),
                   );
                 },
+                      ),
               );
             },
           ),

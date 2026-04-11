@@ -46,31 +46,52 @@ class FilaDetalheScreen extends ConsumerWidget {
           ],
         ),
       ),
-      body: entradas.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(sessaoNotifierProvider);
+          if (sessaoId != null) {
+            ref
+                .read(filaNotifierProvider.notifier)
+                .assinarSessao(sessaoId);
+          }
+        },
+        child: entradas.isEmpty
+            ? ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 children: [
-                  Icon(Icons.people_outline,
-                      size: 64,
-                      color: colorScheme.onSurface.withValues(alpha: 0.2)),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Nenhuma entrada nesta fila',
-                    style: TextStyle(
-                      color: colorScheme.onSurface.withValues(alpha: 0.4),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.people_outline,
+                              size: 64,
+                              color:
+                                  colorScheme.onSurface.withValues(alpha: 0.2)),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Nenhuma entrada nesta fila',
+                            style: TextStyle(
+                              color:
+                                  colorScheme.onSurface.withValues(alpha: 0.4),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
+              )
+            : ListView.separated(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+                itemCount: entradas.length,
+                separatorBuilder: (_, _) => const SizedBox(height: 8),
+                itemBuilder: (context, index) =>
+                    _EntradaFilaCard(entrada: entradas[index]),
               ),
-            )
-          : ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-              itemCount: entradas.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 8),
-              itemBuilder: (context, index) =>
-                  _EntradaFilaCard(entrada: entradas[index]),
-            ),
+      ),
       floatingActionButton: sessaoId == null
           ? null
           : Column(
