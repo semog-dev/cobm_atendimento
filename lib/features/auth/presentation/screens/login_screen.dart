@@ -49,6 +49,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final inicializando = ref.watch(authInicializandoProvider);
+    final ocupado = _carregando || inicializando;
 
     return Scaffold(
       body: Stack(
@@ -113,11 +115,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const SizedBox(height: 24),
                         ElevatedButton(
                           key: const Key('btn_entrar'),
-                          onPressed: _carregando ? null : _login,
+                          onPressed: ocupado ? null : _login,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 16),
                           ),
-                          child: _carregando
+                          child: ocupado
                               ? const SizedBox(
                                   height: 20,
                                   width: 20,

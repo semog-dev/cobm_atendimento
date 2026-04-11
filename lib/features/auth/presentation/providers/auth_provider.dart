@@ -8,6 +8,11 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository(client: supabase);
 });
 
+/// True enquanto a sessão salva está sendo restaurada automaticamente.
+final authInicializandoProvider = StateProvider<bool>(
+  (ref) => supabase.auth.currentUser != null,
+);
+
 final authProvider = NotifierProvider<AuthNotifier, Usuario?>(AuthNotifier.new);
 
 class AuthNotifier extends Notifier<Usuario?> {
@@ -38,6 +43,8 @@ class AuthNotifier extends Notifier<Usuario?> {
       state = Usuario.fromMap(map);
     } catch (_) {
       // sessão inválida ou perfil não encontrado — mantém null
+    } finally {
+      ref.read(authInicializandoProvider.notifier).state = false;
     }
   }
 
