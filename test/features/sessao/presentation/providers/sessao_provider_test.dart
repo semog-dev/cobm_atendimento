@@ -79,5 +79,52 @@ void main() {
       final state = container.read(sessaoNotifierProvider);
       expect(state.value, isNull);
     });
+
+    test('should propagar exceção when encerrarSessao falha', () async {
+      when(() => mockRepository.buscarSessaoAberta())
+          .thenAnswer((_) async => null);
+      when(() => mockRepository.encerrarSessao(any()))
+          .thenThrow(Exception('DB error'));
+
+      expect(
+        () => container
+            .read(sessaoNotifierProvider.notifier)
+            .encerrarSessao('uuid-sess-001'),
+        throwsA(isA<Exception>()),
+      );
+    });
+  });
+
+  group('SessaoNotifier — error handling', () {
+    test('should expor AsyncError when buscarSessaoAberta falha no build',
+        () async {
+      when(() => mockRepository.buscarSessaoAberta())
+          .thenThrow(Exception('Sem conexão'));
+
+      await expectLater(
+        container.read(sessaoNotifierProvider.future),
+        throwsA(isA<Exception>()),
+      );
+
+      final state = container.read(sessaoNotifierProvider);
+      expect(state, isA<AsyncError>());
+    });
+
+    test('should propagar exceção when abrirSessao falha', () async {
+      when(() => mockRepository.buscarSessaoAberta())
+          .thenAnswer((_) async => null);
+      when(() => mockRepository.abrirSessao(gestorId: any(named: 'gestorId')))
+          .thenThrow(Exception('DB error'));
+
+      await container.read(sessaoNotifierProvider.future);
+
+      expect(
+        () => container.read(sessaoNotifierProvider.notifier).abrirSessao(
+              gestorId: 'uuid-456',
+              mediumEntidadeIds: {},
+            ),
+        throwsA(isA<Exception>()),
+      );
+    });
   });
 }

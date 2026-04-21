@@ -140,5 +140,65 @@ void main() {
 
       verify(() => mockRepository.ativar(mediumInativo.id)).called(1);
     });
+
+    test('should expor AsyncError when repositório falha no build', () async {
+      when(() => mockRepository.listar())
+          .thenThrow(Exception('Erro de conexão'));
+
+      await expectLater(
+        container.read(mediunsGestorProvider.future),
+        throwsA(isA<Exception>()),
+      );
+
+      final state = container.read(mediunsGestorProvider);
+      expect(state, isA<AsyncError>());
+    });
+
+    test('should propagar exceção when criar falha', () async {
+      when(() => mockRepository.listar()).thenAnswer((_) async => []);
+      when(() => mockRepository.criar(
+            nome: any(named: 'nome'),
+            fotoUrl: any(named: 'fotoUrl'),
+          )).thenThrow(Exception('DB error'));
+
+      await container.read(mediunsGestorProvider.future);
+
+      expect(
+        () => container
+            .read(mediunsGestorProvider.notifier)
+            .criar(nome: 'José'),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('should propagar exceção when atualizar falha', () async {
+      when(() => mockRepository.listar()).thenAnswer((_) async => []);
+      when(() => mockRepository.salvar(any()))
+          .thenThrow(Exception('DB error'));
+
+      await container.read(mediunsGestorProvider.future);
+
+      expect(
+        () => container
+            .read(mediunsGestorProvider.notifier)
+            .atualizar(mediumFake),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('should propagar exceção when alternarAtivo falha', () async {
+      when(() => mockRepository.listar()).thenAnswer((_) async => []);
+      when(() => mockRepository.desativar(any()))
+          .thenThrow(Exception('DB error'));
+
+      await container.read(mediunsGestorProvider.future);
+
+      expect(
+        () => container
+            .read(mediunsGestorProvider.notifier)
+            .alternarAtivo(mediumFake.id, ativo: true),
+        throwsA(isA<Exception>()),
+      );
+    });
   });
 }

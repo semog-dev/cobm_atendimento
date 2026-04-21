@@ -199,5 +199,65 @@ void main() {
 
       verify(() => mockRepository.ativar(entidadeFake.id)).called(1);
     });
+
+    test('should expor AsyncError when repositório falha no build', () async {
+      when(() => mockRepository.listar())
+          .thenThrow(Exception('Erro de conexão'));
+
+      await expectLater(
+        container.read(entidadesGestorProvider.future),
+        throwsA(isA<Exception>()),
+      );
+
+      final state = container.read(entidadesGestorProvider);
+      expect(state, isA<AsyncError>());
+    });
+
+    test('should propagar exceção when criar falha', () async {
+      when(() => mockRepository.listar()).thenAnswer((_) async => []);
+      when(() => mockRepository.criar(
+            nome: any(named: 'nome'),
+            descricao: any(named: 'descricao'),
+          )).thenThrow(Exception('Duplicate entry'));
+
+      await container.read(entidadesGestorProvider.future);
+
+      expect(
+        () => container
+            .read(entidadesGestorProvider.notifier)
+            .criar(nome: 'Exu'),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('should propagar exceção when atualizar falha', () async {
+      when(() => mockRepository.listar()).thenAnswer((_) async => []);
+      when(() => mockRepository.salvar(any()))
+          .thenThrow(Exception('DB error'));
+
+      await container.read(entidadesGestorProvider.future);
+
+      expect(
+        () => container
+            .read(entidadesGestorProvider.notifier)
+            .atualizar(entidadeFake),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('should propagar exceção when alternarAtiva falha', () async {
+      when(() => mockRepository.listar()).thenAnswer((_) async => []);
+      when(() => mockRepository.desativar(any()))
+          .thenThrow(Exception('DB error'));
+
+      await container.read(entidadesGestorProvider.future);
+
+      expect(
+        () => container
+            .read(entidadesGestorProvider.notifier)
+            .alternarAtiva(entidadeFake.id, ativa: true),
+        throwsA(isA<Exception>()),
+      );
+    });
   });
 }

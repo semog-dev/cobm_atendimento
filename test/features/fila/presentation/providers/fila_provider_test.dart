@@ -134,4 +134,85 @@ void main() {
       );
     });
   });
+
+  group('FilaNotifier — error handling', () {
+    test('should propagar exceção when chamarProximo falha', () async {
+      when(() => mockRepository.chamarProximo(any()))
+          .thenThrow(Exception('DB error'));
+
+      expect(
+        () => container
+            .read(filaNotifierProvider.notifier)
+            .chamarProximo('uuid-fila-001'),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('should propagar exceção when encerrarAtendimento falha', () async {
+      when(() => mockRepository.encerrarAtendimento(any()))
+          .thenThrow(Exception('DB error'));
+
+      expect(
+        () => container
+            .read(filaNotifierProvider.notifier)
+            .encerrarAtendimento('uuid-fila-001'),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('should propagar exceção when entrarNaFila falha', () async {
+      when(() => mockRepository.ultimaPosicao(
+            sessaoId: any(named: 'sessaoId'),
+            mediumEntidadeId: any(named: 'mediumEntidadeId'),
+          )).thenAnswer((_) async => 0);
+      when(() => mockRepository.entrarNaFila(
+            sessaoId: any(named: 'sessaoId'),
+            clienteNome: any(named: 'clienteNome'),
+            mediumEntidadeId: any(named: 'mediumEntidadeId'),
+            posicao: any(named: 'posicao'),
+          )).thenThrow(Exception('DB error'));
+
+      expect(
+        () => container.read(filaNotifierProvider.notifier).entrarNaFila(
+              sessaoId: 'uuid-sess-001',
+              clienteNome: 'João',
+              mediumEntidadeId: 'uuid-me-001',
+            ),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('should propagar exceção when cancelarEntrada falha', () async {
+      when(() => mockRepository.cancelarEntrada(any()))
+          .thenThrow(Exception('DB error'));
+
+      expect(
+        () => container
+            .read(filaNotifierProvider.notifier)
+            .cancelarEntrada('uuid-fila-001'),
+        throwsA(isA<Exception>()),
+      );
+    });
+
+    test('should manter estado anterior quando chamarProximo falha', () async {
+      when(() => mockRepository.listarPorSessaoStream(any()))
+          .thenAnswer((_) => Stream.value([entradaFilaFake]));
+      when(() => mockRepository.chamarProximo(any()))
+          .thenThrow(Exception('DB error'));
+
+      container
+          .read(filaNotifierProvider.notifier)
+          .assinarSessao('uuid-sess-001');
+      await Future.delayed(Duration.zero);
+
+      try {
+        await container
+            .read(filaNotifierProvider.notifier)
+            .chamarProximo('uuid-fila-001');
+      } catch (_) {}
+
+      final state = container.read(filaNotifierProvider);
+      expect(state.first.isAguardando, isTrue);
+    });
+  });
 }

@@ -22,6 +22,7 @@ Widget _buildWidget(MockAuthRepository mockRepository) {
   return ProviderScope(
     overrides: [
       authRepositoryProvider.overrideWithValue(mockRepository),
+      authInicializandoProvider.overrideWith((ref) => false),
     ],
     child: MaterialApp.router(routerConfig: router),
   );
