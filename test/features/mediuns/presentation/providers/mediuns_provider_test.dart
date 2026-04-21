@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:cobm_atendimento/features/mediuns/data/mediuns_repository.dart';
-import 'package:cobm_atendimento/features/mediuns/domain/models/medium.dart';
 import 'package:cobm_atendimento/features/mediuns/presentation/providers/mediuns_provider.dart';
 import '../../../../core/helpers/test_helpers.dart';
 

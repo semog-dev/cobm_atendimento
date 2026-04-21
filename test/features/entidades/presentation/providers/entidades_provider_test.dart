@@ -2,7 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:cobm_atendimento/features/entidades/data/entidades_repository.dart';
-import 'package:cobm_atendimento/features/entidades/domain/models/entidade.dart';
 import 'package:cobm_atendimento/features/entidades/presentation/providers/entidades_provider.dart';
 import '../../../../core/helpers/test_helpers.dart';
 

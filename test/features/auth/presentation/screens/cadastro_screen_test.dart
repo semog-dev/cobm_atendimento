@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:cobm_atendimento/features/auth/data/auth_repository.dart';
 import 'package:cobm_atendimento/features/auth/presentation/providers/auth_provider.dart';
 import 'package:cobm_atendimento/features/auth/presentation/screens/cadastro_screen.dart';
