@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mocktail/mocktail.dart';
@@ -213,6 +214,110 @@ void main() {
 
       final state = container.read(filaNotifierProvider);
       expect(state.first.isAguardando, isTrue);
+    });
+  });
+
+  group('FilaNotifier — real-time stream', () {
+    test('should atualizar estado a cada evento do stream', () async {
+      final controller = StreamController<List<EntradaFila>>();
+
+      when(() => mockRepository.listarPorSessaoStream(any()))
+          .thenAnswer((_) => controller.stream);
+
+      container
+          .read(filaNotifierProvider.notifier)
+          .assinarSessao('uuid-sess-001');
+
+      controller.add([entradaFilaFake]);
+      await Future.delayed(Duration.zero);
+      expect(container.read(filaNotifierProvider), [entradaFilaFake]);
+
+      final segunda = entradaFilaFake.copyWith(
+        status: StatusFila.emAtendimento,
+        chamadoEm: DateTime(2024, 1, 1, 9, 5),
+      );
+      controller.add([segunda]);
+      await Future.delayed(Duration.zero);
+      expect(container.read(filaNotifierProvider).first.isEmAtendimento, isTrue);
+
+      await controller.close();
+    });
+
+    test('should limpar estado quando stream emite lista vazia', () async {
+      final controller = StreamController<List<EntradaFila>>();
+
+      when(() => mockRepository.listarPorSessaoStream(any()))
+          .thenAnswer((_) => controller.stream);
+
+      container
+          .read(filaNotifierProvider.notifier)
+          .assinarSessao('uuid-sess-001');
+
+      controller.add([entradaFilaFake]);
+      await Future.delayed(Duration.zero);
+      expect(container.read(filaNotifierProvider), isNotEmpty);
+
+      controller.add([]);
+      await Future.delayed(Duration.zero);
+      expect(container.read(filaNotifierProvider), isEmpty);
+
+      await controller.close();
+    });
+
+    test('should cancelar stream anterior ao assinar nova sessão', () async {
+      final controller1 = StreamController<List<EntradaFila>>();
+      final controller2 = StreamController<List<EntradaFila>>();
+      var callCount = 0;
+
+      when(() => mockRepository.listarPorSessaoStream(any()))
+          .thenAnswer((_) {
+        callCount++;
+        return callCount == 1 ? controller1.stream : controller2.stream;
+      });
+
+      container
+          .read(filaNotifierProvider.notifier)
+          .assinarSessao('uuid-sess-001');
+
+      controller1.add([entradaFilaFake]);
+      await Future.delayed(Duration.zero);
+      expect(container.read(filaNotifierProvider), [entradaFilaFake]);
+
+      container
+          .read(filaNotifierProvider.notifier)
+          .assinarSessao('uuid-sess-002');
+
+      final outraEntrada = entradaFilaFake.copyWith(id: 'uuid-fila-002');
+      controller2.add([outraEntrada]);
+      await Future.delayed(Duration.zero);
+      expect(container.read(filaNotifierProvider), [outraEntrada]);
+
+      controller1.add([entradaFilaFake]);
+      await Future.delayed(Duration.zero);
+      expect(container.read(filaNotifierProvider), [outraEntrada]);
+
+      await controller1.close();
+      await controller2.close();
+    });
+
+    test('should cancelar stream ao descartar o provider', () async {
+      final controller = StreamController<List<EntradaFila>>();
+
+      when(() => mockRepository.listarPorSessaoStream(any()))
+          .thenAnswer((_) => controller.stream);
+
+      container
+          .read(filaNotifierProvider.notifier)
+          .assinarSessao('uuid-sess-001');
+
+      controller.add([entradaFilaFake]);
+      await Future.delayed(Duration.zero);
+
+      container.dispose();
+
+      expect(controller.hasListener, isFalse);
+
+      await controller.close();
     });
   });
 }
