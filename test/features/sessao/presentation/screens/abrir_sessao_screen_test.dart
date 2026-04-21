@@ -111,5 +111,53 @@ void main() {
 
       verify(() => mockRepository.abrirSessao(gestorId: gestorFake.id)).called(1);
     });
+
+    testWidgets('deve voltar para tela anterior após abrir sessão com sucesso',
+        (tester) async {
+      when(() => mockRepository.buscarSessaoAberta())
+          .thenAnswer((_) async => null);
+      when(() => mockRepository.abrirSessao(gestorId: any(named: 'gestorId')))
+          .thenAnswer((_) async => sessaoFake);
+      when(() => mockRepository.vincularMediumEntidade(
+            sessaoId: any(named: 'sessaoId'),
+            mediumEntidadeId: any(named: 'mediumEntidadeId'),
+          )).thenAnswer((_) async {});
+
+      final router = GoRouter(
+        initialLocation: '/lista/abrir',
+        routes: [
+          GoRoute(
+            path: '/lista',
+            builder: (ctx, state) =>
+                const Scaffold(body: Text('Sessão')),
+            routes: [
+              GoRoute(
+                path: 'abrir',
+                builder: (ctx, state) => const AbrirSessaoScreen(),
+              ),
+            ],
+          ),
+        ],
+      );
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          authProvider.overrideWith(() => _GestorAuthNotifier()),
+          sessaoRepositoryProvider.overrideWithValue(mockRepository),
+        ],
+        child: MaterialApp.router(
+          theme: AppTheme.light,
+          routerConfig: router,
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(Key('me_check_${mediumEntidadeFake.id}')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byKey(const Key('btn_confirmar_abertura')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sessão'), findsOneWidget);
+    });
   });
 }

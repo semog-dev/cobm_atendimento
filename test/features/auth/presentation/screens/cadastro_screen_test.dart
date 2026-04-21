@@ -49,13 +49,49 @@ void main() {
       expect(find.byKey(const Key('btn_login')), findsOneWidget);
     });
 
-    testWidgets('deve exibir erros quando campos estão vazios', (tester) async {
+    testWidgets('deve exibir erro quando nome está vazio', (tester) async {
       await tester.pumpWidget(_buildWidget(mockRepository));
 
       await tester.tap(find.byKey(const Key('btn_cadastrar')));
       await tester.pump();
 
       expect(find.text('Informe o nome'), findsOneWidget);
+    });
+
+    testWidgets('deve exibir erro quando telefone está vazio', (tester) async {
+      await tester.pumpWidget(_buildWidget(mockRepository));
+
+      await tester.enterText(find.byKey(const Key('nome_field')), 'João');
+      await tester.tap(find.byKey(const Key('btn_cadastrar')));
+      await tester.pump();
+
+      expect(find.text('Informe o telefone'), findsOneWidget);
+    });
+
+    testWidgets('deve exibir erro quando e-mail está vazio', (tester) async {
+      await tester.pumpWidget(_buildWidget(mockRepository));
+
+      await tester.enterText(find.byKey(const Key('nome_field')), 'João');
+      await tester.enterText(
+          find.byKey(const Key('telefone_field')), '11999999999');
+      await tester.tap(find.byKey(const Key('btn_cadastrar')));
+      await tester.pump();
+
+      expect(find.text('Informe o e-mail'), findsOneWidget);
+    });
+
+    testWidgets('deve exibir erro quando senha está vazia', (tester) async {
+      await tester.pumpWidget(_buildWidget(mockRepository));
+
+      await tester.enterText(find.byKey(const Key('nome_field')), 'João');
+      await tester.enterText(
+          find.byKey(const Key('telefone_field')), '11999999999');
+      await tester.enterText(
+          find.byKey(const Key('email_field')), 'joao@email.com');
+      await tester.tap(find.byKey(const Key('btn_cadastrar')));
+      await tester.pump();
+
+      expect(find.text('Informe a senha'), findsOneWidget);
     });
 
     testWidgets('deve chamar cadastrar quando formulário é válido',

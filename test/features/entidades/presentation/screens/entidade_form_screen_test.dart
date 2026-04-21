@@ -137,5 +137,49 @@ void main() {
       );
       expect(checkbox.value, isTrue);
     });
+
+    testWidgets('deve voltar para tela anterior após criar com sucesso',
+        (tester) async {
+      when(() => mockEntidadesRepo.listar())
+          .thenAnswer((_) async => [entidadeFake]);
+      when(() => mockEntidadesRepo.criar(
+            nome: any(named: 'nome'),
+            descricao: any(named: 'descricao'),
+          )).thenAnswer((_) async => entidadeFake);
+
+      final router = GoRouter(
+        initialLocation: '/lista/form',
+        routes: [
+          GoRoute(
+            path: '/lista',
+            builder: (ctx, state) =>
+                const Scaffold(body: Text('Lista de Entidades')),
+            routes: [
+              GoRoute(
+                path: 'form',
+                builder: (ctx, state) => const EntidadeFormScreen(),
+              ),
+            ],
+          ),
+        ],
+      );
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          entidadesRepositoryProvider.overrideWithValue(mockEntidadesRepo),
+          mediunsRepositoryProvider.overrideWithValue(mockMediunsRepo),
+        ],
+        child: MaterialApp.router(
+          theme: AppTheme.light,
+          routerConfig: router,
+        ),
+      ));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(const Key('nome_field')), 'Exu');
+      await tester.tap(find.byKey(const Key('btn_salvar')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Lista de Entidades'), findsOneWidget);
+    });
   });
 }

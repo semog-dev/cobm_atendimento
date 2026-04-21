@@ -84,5 +84,24 @@ void main() {
               mockFilaRepository.encerrarAtendimento(entradaEmAtendimento.id))
           .called(1);
     });
+
+    testWidgets('should navegar para tela de fila após encerrar atendimento',
+        (tester) async {
+      final encerrada = entradaEmAtendimento.copyWith(
+        status: StatusFila.concluido,
+        encerradoEm: DateTime(2024, 1, 1, 9, 30),
+        duracaoSegundos: 1500,
+      );
+      when(() => mockFilaRepository.encerrarAtendimento(any()))
+          .thenAnswer((_) async => encerrada);
+
+      await tester.pumpWidget(buildWidget());
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('btn_encerrar_atendimento')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Fila'), findsOneWidget);
+    });
   });
 }

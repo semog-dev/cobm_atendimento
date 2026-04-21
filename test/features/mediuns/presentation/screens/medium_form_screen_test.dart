@@ -131,5 +131,46 @@ void main() {
 
       verify(() => mockRepository.salvar(any())).called(1);
     });
+
+    testWidgets('deve voltar para tela anterior após criar com sucesso',
+        (tester) async {
+      when(() => mockRepository.criar(
+            nome: any(named: 'nome'),
+            fotoUrl: any(named: 'fotoUrl'),
+          )).thenAnswer((_) async => mediumFake);
+      when(() => mockRepository.listar())
+          .thenAnswer((_) async => [mediumFake]);
+
+      final router = GoRouter(
+        initialLocation: '/lista/novo',
+        routes: [
+          GoRoute(
+            path: '/lista',
+            builder: (ctx, state) =>
+                const Scaffold(body: Text('Lista de Médiuns')),
+            routes: [
+              GoRoute(
+                path: 'novo',
+                builder: (ctx, state) => const MediumFormScreen(),
+              ),
+            ],
+          ),
+        ],
+      );
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          mediunsRepositoryProvider.overrideWithValue(mockRepository),
+        ],
+        child: MaterialApp.router(routerConfig: router),
+      ));
+      await tester.pump();
+
+      await tester.enterText(
+          find.byKey(const Key('nome_field')), 'José da Silva');
+      await tester.tap(find.byKey(const Key('btn_salvar')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Lista de Médiuns'), findsOneWidget);
+    });
   });
 }
