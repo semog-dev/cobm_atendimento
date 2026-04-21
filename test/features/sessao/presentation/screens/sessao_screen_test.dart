@@ -91,7 +91,7 @@ void main() {
 
       expect(
         find.text(
-            '${mediumEntidadeFake.mediumNome} — ${mediumEntidadeFake.entidadeNome}'),
+            '${mediumEntidadeFake.entidadeNome} — ${mediumEntidadeFake.mediumNome}'),
         findsOneWidget,
       );
     });

@@ -71,7 +71,7 @@ void main() {
       await tester.pumpWidget(buildWidget(fila: [entradaFilaFake]));
       await tester.pumpAndSettle();
 
-      expect(find.text('Posição 1'), findsOneWidget);
+      expect(find.text('${entradaFilaFake.posicao}'), findsOneWidget);
       expect(find.text(entradaFilaFake.clienteNome), findsOneWidget);
     });
 

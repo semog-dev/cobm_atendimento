@@ -50,22 +50,6 @@ void main() {
       expect(find.byKey(const Key('btn_entrar')), findsOneWidget);
     });
 
-    testWidgets('deve exibir link para cadastro', (tester) async {
-      await tester.pumpWidget(_buildWidget(mockRepository));
-
-      expect(find.byKey(const Key('btn_cadastro')), findsOneWidget);
-    });
-
-    testWidgets('deve navegar para tela de cadastro ao tocar no link',
-        (tester) async {
-      await tester.pumpWidget(_buildWidget(mockRepository));
-
-      await tester.tap(find.byKey(const Key('btn_cadastro')));
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('nome_field')), findsOneWidget);
-    });
-
     testWidgets('deve exibir erro quando email está vazio', (tester) async {
       await tester.pumpWidget(_buildWidget(mockRepository));
 

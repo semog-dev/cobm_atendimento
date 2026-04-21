@@ -35,6 +35,7 @@ void main() {
     container = ProviderContainer(
       overrides: [
         authRepositoryProvider.overrideWithValue(mockRepository),
+        authInicializandoProvider.overrideWith((ref) => false),
       ],
     );
   });

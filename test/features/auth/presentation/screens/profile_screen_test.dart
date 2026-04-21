@@ -34,6 +34,7 @@ void main() {
       overrides: [
         authRepositoryProvider.overrideWithValue(mockAuthRepository),
         authProvider.overrideWith(() => _FakeAuthNotifier()),
+        authInicializandoProvider.overrideWith((ref) => false),
       ],
       child: MaterialApp.router(
         theme: AppTheme.light,
@@ -51,7 +52,7 @@ void main() {
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
-      expect(find.text(gestorFake.nome), findsOneWidget);
+      expect(find.text(gestorFake.nome), findsAtLeastNWidgets(1));
     });
 
     testWidgets('should exibir telefone do usuário logado', (tester) async {

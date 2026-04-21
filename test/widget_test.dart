@@ -9,6 +9,7 @@ void main() {
     await tester.pumpWidget(ProviderScope(
       overrides: [
         authProvider.overrideWith(() => _FakeAuthNotifier()),
+        authInicializandoProvider.overrideWith((ref) => false),
       ],
       child: const App(),
     ));

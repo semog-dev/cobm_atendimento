@@ -62,11 +62,8 @@ void main() {
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
-      expect(
-        find.text(
-            '${mediumEntidadeFake.mediumNome} — ${mediumEntidadeFake.entidadeNome}'),
-        findsOneWidget,
-      );
+      expect(find.text(mediumEntidadeFake.entidadeNome), findsOneWidget);
+      expect(find.text(mediumEntidadeFake.mediumNome), findsOneWidget);
     });
 
     testWidgets('deve exibir botão de confirmar desabilitado sem seleção',
