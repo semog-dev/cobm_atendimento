@@ -5,19 +5,19 @@ enum StatusFila {
   cancelado;
 
   String toJson() => switch (this) {
-        StatusFila.aguardando => 'aguardando',
-        StatusFila.emAtendimento => 'em_atendimento',
-        StatusFila.concluido => 'concluido',
-        StatusFila.cancelado => 'cancelado',
-      };
+    StatusFila.aguardando => 'aguardando',
+    StatusFila.emAtendimento => 'em_atendimento',
+    StatusFila.concluido => 'concluido',
+    StatusFila.cancelado => 'cancelado',
+  };
 
   static StatusFila fromJson(String value) => switch (value) {
-        'aguardando' => StatusFila.aguardando,
-        'em_atendimento' => StatusFila.emAtendimento,
-        'concluido' => StatusFila.concluido,
-        'cancelado' => StatusFila.cancelado,
-        _ => throw ArgumentError('StatusFila inválido: $value'),
-      };
+    'aguardando' => StatusFila.aguardando,
+    'em_atendimento' => StatusFila.emAtendimento,
+    'concluido' => StatusFila.concluido,
+    'cancelado' => StatusFila.cancelado,
+    _ => throw ArgumentError('StatusFila inválido: $value'),
+  };
 }
 
 class EntradaFila {
@@ -75,10 +75,18 @@ class EntradaFila {
       posicao: posicao ?? this.posicao,
       status: status ?? this.status,
       criadoEm: criadoEm ?? this.criadoEm,
-      chamadoEm: identical(chamadoEm, _unset) ? this.chamadoEm : chamadoEm as DateTime?,
-      iniciadoEm: identical(iniciadoEm, _unset) ? this.iniciadoEm : iniciadoEm as DateTime?,
-      encerradoEm: identical(encerradoEm, _unset) ? this.encerradoEm : encerradoEm as DateTime?,
-      duracaoSegundos: identical(duracaoSegundos, _unset) ? this.duracaoSegundos : duracaoSegundos as int?,
+      chamadoEm: identical(chamadoEm, _unset)
+          ? this.chamadoEm
+          : chamadoEm as DateTime?,
+      iniciadoEm: identical(iniciadoEm, _unset)
+          ? this.iniciadoEm
+          : iniciadoEm as DateTime?,
+      encerradoEm: identical(encerradoEm, _unset)
+          ? this.encerradoEm
+          : encerradoEm as DateTime?,
+      duracaoSegundos: identical(duracaoSegundos, _unset)
+          ? this.duracaoSegundos
+          : duracaoSegundos as int?,
     );
   }
 
@@ -107,9 +115,15 @@ class EntradaFila {
       posicao: map['posicao'] as int,
       status: StatusFila.fromJson(map['status'] as String),
       criadoEm: DateTime.parse(map['criado_em'] as String),
-      chamadoEm: map['chamado_em'] != null ? DateTime.parse(map['chamado_em'] as String) : null,
-      iniciadoEm: map['iniciado_em'] != null ? DateTime.parse(map['iniciado_em'] as String) : null,
-      encerradoEm: map['encerrado_em'] != null ? DateTime.parse(map['encerrado_em'] as String) : null,
+      chamadoEm: map['chamado_em'] != null
+          ? DateTime.parse(map['chamado_em'] as String)
+          : null,
+      iniciadoEm: map['iniciado_em'] != null
+          ? DateTime.parse(map['iniciado_em'] as String)
+          : null,
+      encerradoEm: map['encerrado_em'] != null
+          ? DateTime.parse(map['encerrado_em'] as String)
+          : null,
       duracaoSegundos: map['duracao_segundos'] as int?,
     );
   }
@@ -132,7 +146,16 @@ class EntradaFila {
 
   @override
   int get hashCode => Object.hash(
-        id, sessaoId, clienteNome, mediumEntidadeId, posicao,
-        status, criadoEm, chamadoEm, iniciadoEm, encerradoEm, duracaoSegundos,
-      );
+    id,
+    sessaoId,
+    clienteNome,
+    mediumEntidadeId,
+    posicao,
+    status,
+    criadoEm,
+    chamadoEm,
+    iniciadoEm,
+    encerradoEm,
+    duracaoSegundos,
+  );
 }

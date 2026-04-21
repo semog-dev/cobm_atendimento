@@ -25,8 +25,7 @@ void main() {
         GoRoute(path: '/', builder: (ctx, state) => const ProfileScreen()),
         GoRoute(
           path: '/login',
-          builder: (ctx, state) =>
-              const Scaffold(body: Text('Login')),
+          builder: (ctx, state) => const Scaffold(body: Text('Login')),
         ),
       ],
     );
@@ -36,17 +35,15 @@ void main() {
         authProvider.overrideWith(() => _FakeAuthNotifier()),
         authInicializandoProvider.overrideWith((ref) => false),
       ],
-      child: MaterialApp.router(
-        theme: AppTheme.light,
-        routerConfig: router,
-      ),
+      child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
     );
   }
 
   group('ProfileScreen', () {
     testWidgets('should exibir nome do usuário logado', (tester) async {
-      when(() => mockAuthRepository.authStateChanges)
-          .thenAnswer((_) => const Stream.empty());
+      when(
+        () => mockAuthRepository.authStateChanges,
+      ).thenAnswer((_) => const Stream.empty());
       when(() => mockAuthRepository.usuarioAtual).thenReturn(null);
 
       await tester.pumpWidget(buildWidget());
@@ -56,8 +53,9 @@ void main() {
     });
 
     testWidgets('should exibir telefone do usuário logado', (tester) async {
-      when(() => mockAuthRepository.authStateChanges)
-          .thenAnswer((_) => const Stream.empty());
+      when(
+        () => mockAuthRepository.authStateChanges,
+      ).thenAnswer((_) => const Stream.empty());
       when(() => mockAuthRepository.usuarioAtual).thenReturn(null);
 
       await tester.pumpWidget(buildWidget());
@@ -67,8 +65,9 @@ void main() {
     });
 
     testWidgets('should exibir btn_logout', (tester) async {
-      when(() => mockAuthRepository.authStateChanges)
-          .thenAnswer((_) => const Stream.empty());
+      when(
+        () => mockAuthRepository.authStateChanges,
+      ).thenAnswer((_) => const Stream.empty());
       when(() => mockAuthRepository.usuarioAtual).thenReturn(null);
 
       await tester.pumpWidget(buildWidget());
@@ -78,8 +77,9 @@ void main() {
     });
 
     testWidgets('should navegar para login ao fazer logout', (tester) async {
-      when(() => mockAuthRepository.authStateChanges)
-          .thenAnswer((_) => const Stream.empty());
+      when(
+        () => mockAuthRepository.authStateChanges,
+      ).thenAnswer((_) => const Stream.empty());
       when(() => mockAuthRepository.usuarioAtual).thenReturn(null);
       when(() => mockAuthRepository.logout()).thenAnswer((_) async {});
 

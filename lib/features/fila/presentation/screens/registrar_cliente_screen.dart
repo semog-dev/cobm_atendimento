@@ -36,7 +36,9 @@ class _RegistrarClienteScreenState
 
     setState(() => _carregando = true);
     try {
-      await ref.read(filaNotifierProvider.notifier).entrarNaFila(
+      await ref
+          .read(filaNotifierProvider.notifier)
+          .entrarNaFila(
             sessaoId: widget.sessaoId,
             clienteNome: _nomeController.text.trim(),
             mediumEntidadeId: widget.mediumEntidade.id,
@@ -67,8 +69,7 @@ class _RegistrarClienteScreenState
                   color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color:
-                        colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.5),
                   ),
                 ),
                 child: IntrinsicHeight(
@@ -102,19 +103,16 @@ class _RegistrarClienteScreenState
                               const SizedBox(height: 4),
                               Text(
                                 widget.mediumEntidade.entidadeNome,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
+                                style: Theme.of(context).textTheme.titleMedium
                                     ?.copyWith(fontWeight: FontWeight.w600),
                               ),
                               Text(
                                 widget.mediumEntidade.mediumNome,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
+                                style: Theme.of(context).textTheme.bodySmall
                                     ?.copyWith(
-                                      color: colorScheme.onSurface
-                                          .withValues(alpha: 0.5),
+                                      color: colorScheme.onSurface.withValues(
+                                        alpha: 0.5,
+                                      ),
                                     ),
                               ),
                             ],

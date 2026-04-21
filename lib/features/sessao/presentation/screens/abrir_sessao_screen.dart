@@ -33,16 +33,18 @@ class _AbrirSessaoScreenState extends ConsumerState<AbrirSessaoScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.group_off_outlined,
-                              size: 48,
-                              color: colorScheme.onSurface
-                                  .withValues(alpha: 0.2)),
+                          Icon(
+                            Icons.group_off_outlined,
+                            size: 48,
+                            color: colorScheme.onSurface.withValues(alpha: 0.2),
+                          ),
                           const SizedBox(height: 12),
                           Text(
                             'Nenhum médium/entidade disponível.',
                             style: TextStyle(
-                              color:
-                                  colorScheme.onSurface.withValues(alpha: 0.4),
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.4,
+                              ),
                             ),
                           ),
                         ],
@@ -69,7 +71,9 @@ class _AbrirSessaoScreenState extends ConsumerState<AbrirSessaoScreen> {
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 14),
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
                             decoration: BoxDecoration(
                               color: selecionado
                                   ? colorScheme.primary.withValues(alpha: 0.08)
@@ -77,10 +81,10 @@ class _AbrirSessaoScreenState extends ConsumerState<AbrirSessaoScreen> {
                               borderRadius: BorderRadius.circular(16),
                               border: Border.all(
                                 color: selecionado
-                                    ? colorScheme.primary
-                                        .withValues(alpha: 0.5)
-                                    : colorScheme.outlineVariant
-                                        .withValues(alpha: 0.5),
+                                    ? colorScheme.primary.withValues(alpha: 0.5)
+                                    : colorScheme.outlineVariant.withValues(
+                                        alpha: 0.5,
+                                      ),
                                 width: selecionado ? 1.5 : 1,
                               ),
                             ),
@@ -98,14 +102,18 @@ class _AbrirSessaoScreenState extends ConsumerState<AbrirSessaoScreen> {
                                     border: Border.all(
                                       color: selecionado
                                           ? colorScheme.primary
-                                          : colorScheme.onSurface
-                                              .withValues(alpha: 0.3),
+                                          : colorScheme.onSurface.withValues(
+                                              alpha: 0.3,
+                                            ),
                                       width: 1.5,
                                     ),
                                   ),
                                   child: selecionado
-                                      ? const Icon(Icons.check,
-                                          size: 16, color: Colors.white)
+                                      ? const Icon(
+                                          Icons.check,
+                                          size: 16,
+                                          color: Colors.white,
+                                        )
                                       : null,
                                 ),
                                 const SizedBox(width: 14),
@@ -120,7 +128,8 @@ class _AbrirSessaoScreenState extends ConsumerState<AbrirSessaoScreen> {
                                             .textTheme
                                             .titleSmall
                                             ?.copyWith(
-                                                fontWeight: FontWeight.w600),
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                       ),
                                       Text(
                                         me.mediumNome,

@@ -26,8 +26,9 @@ class _MediumFormScreenState extends ConsumerState<MediumFormScreen> {
   void initState() {
     super.initState();
     _nomeController = TextEditingController(text: widget.medium?.nome ?? '');
-    _fotoUrlController =
-        TextEditingController(text: widget.medium?.fotoUrl ?? '');
+    _fotoUrlController = TextEditingController(
+      text: widget.medium?.fotoUrl ?? '',
+    );
   }
 
   @override
@@ -75,9 +76,7 @@ class _MediumFormScreenState extends ConsumerState<MediumFormScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_editando ? 'Editar Médium' : 'Novo Médium'),
-      ),
+      appBar: AppBar(title: Text(_editando ? 'Editar Médium' : 'Novo Médium')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -96,8 +95,9 @@ class _MediumFormScreenState extends ConsumerState<MediumFormScreen> {
                 key: const Key('foto_url_field'),
                 controller: _fotoUrlController,
                 keyboardType: TextInputType.url,
-                decoration:
-                    const InputDecoration(labelText: 'URL da foto (opcional)'),
+                decoration: const InputDecoration(
+                  labelText: 'URL da foto (opcional)',
+                ),
               ),
               const SizedBox(height: 8),
               if (_erro != null)

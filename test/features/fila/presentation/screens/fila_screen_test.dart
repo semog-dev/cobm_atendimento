@@ -43,18 +43,17 @@ void main() {
         filaRepositoryProvider.overrideWithValue(mockFilaRepository),
         sessaoRepositoryProvider.overrideWithValue(mockSessaoRepository),
       ],
-      child: MaterialApp.router(
-        theme: AppTheme.light,
-        routerConfig: router,
-      ),
+      child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
     );
   }
 
   group('FilaScreen', () {
-    testWidgets('should mostrar mensagem quando não há sessão aberta',
-        (tester) async {
-      when(() => mockSessaoRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => null);
+    testWidgets('should mostrar mensagem quando não há sessão aberta', (
+      tester,
+    ) async {
+      when(
+        () => mockSessaoRepository.buscarSessaoAberta(),
+      ).thenAnswer((_) async => null);
 
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
@@ -63,30 +62,36 @@ void main() {
     });
 
     testWidgets(
-        'should mostrar cards de medium_entidade quando sessão está aberta',
-        (tester) async {
-      when(() => mockSessaoRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => sessaoFake);
-      when(() => mockSessaoRepository.listarMediumEntidadesDaSessao(any()))
-          .thenAnswer((_) async => [mediumEntidadeFake]);
-      when(() => mockFilaRepository.listarPorSessaoStream(any()))
-          .thenAnswer((_) => Stream.value([entradaFilaFake]));
+      'should mostrar cards de medium_entidade quando sessão está aberta',
+      (tester) async {
+        when(
+          () => mockSessaoRepository.buscarSessaoAberta(),
+        ).thenAnswer((_) async => sessaoFake);
+        when(
+          () => mockSessaoRepository.listarMediumEntidadesDaSessao(any()),
+        ).thenAnswer((_) async => [mediumEntidadeFake]);
+        when(
+          () => mockFilaRepository.listarPorSessaoStream(any()),
+        ).thenAnswer((_) => Stream.value([entradaFilaFake]));
 
-      await tester.pumpWidget(buildWidget());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildWidget());
+        await tester.pumpAndSettle();
 
-      expect(find.text(mediumEntidadeFake.entidadeNome), findsOneWidget);
-      expect(find.text(mediumEntidadeFake.mediumNome), findsOneWidget);
-    });
+        expect(find.text(mediumEntidadeFake.entidadeNome), findsOneWidget);
+        expect(find.text(mediumEntidadeFake.mediumNome), findsOneWidget);
+      },
+    );
 
-    testWidgets('should navegar para detalhe ao tocar no card',
-        (tester) async {
-      when(() => mockSessaoRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => sessaoFake);
-      when(() => mockSessaoRepository.listarMediumEntidadesDaSessao(any()))
-          .thenAnswer((_) async => [mediumEntidadeFake]);
-      when(() => mockFilaRepository.listarPorSessaoStream(any()))
-          .thenAnswer((_) => Stream.value([entradaFilaFake]));
+    testWidgets('should navegar para detalhe ao tocar no card', (tester) async {
+      when(
+        () => mockSessaoRepository.buscarSessaoAberta(),
+      ).thenAnswer((_) async => sessaoFake);
+      when(
+        () => mockSessaoRepository.listarMediumEntidadesDaSessao(any()),
+      ).thenAnswer((_) async => [mediumEntidadeFake]);
+      when(
+        () => mockFilaRepository.listarPorSessaoStream(any()),
+      ).thenAnswer((_) => Stream.value([entradaFilaFake]));
 
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();

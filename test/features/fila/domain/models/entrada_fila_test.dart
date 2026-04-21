@@ -36,11 +36,16 @@ void main() {
       expect(entrada.isCancelado, isFalse);
     });
 
-    test('deve retornar true para isEmAtendimento quando status é em_atendimento', () {
-      final emAtendimento = entrada.copyWith(status: StatusFila.emAtendimento);
-      expect(emAtendimento.isEmAtendimento, isTrue);
-      expect(emAtendimento.isAguardando, isFalse);
-    });
+    test(
+      'deve retornar true para isEmAtendimento quando status é em_atendimento',
+      () {
+        final emAtendimento = entrada.copyWith(
+          status: StatusFila.emAtendimento,
+        );
+        expect(emAtendimento.isEmAtendimento, isTrue);
+        expect(emAtendimento.isAguardando, isFalse);
+      },
+    );
 
     test('deve retornar true para isConcluido quando status é concluido', () {
       final concluido = entrada.copyWith(

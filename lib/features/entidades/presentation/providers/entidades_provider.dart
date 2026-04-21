@@ -16,15 +16,17 @@ final entidadesAtivasProvider = FutureProvider<List<Entidade>>((ref) {
   return ref.read(entidadesRepositoryProvider).listarAtivas();
 });
 
-final mediunsVinculadosProvider =
-    FutureProvider.family<List<Medium>, String>((ref, entidadeId) {
+final mediunsVinculadosProvider = FutureProvider.family<List<Medium>, String>((
+  ref,
+  entidadeId,
+) {
   return ref.read(entidadesRepositoryProvider).listarMediuns(entidadeId);
 });
 
 final entidadesGestorProvider =
     AsyncNotifierProvider<EntidadesGestorNotifier, List<Entidade>>(
-  EntidadesGestorNotifier.new,
-);
+      EntidadesGestorNotifier.new,
+    );
 
 class EntidadesGestorNotifier extends AsyncNotifier<List<Entidade>> {
   EntidadesRepository get _repository => ref.read(entidadesRepositoryProvider);

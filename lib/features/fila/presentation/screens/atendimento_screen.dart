@@ -110,9 +110,7 @@ class _AtendimentoScreenState extends ConsumerState<AtendimentoScreen> {
                           children: [
                             Text(
                               widget.entrada.clienteNome,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
+                              style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(fontWeight: FontWeight.w600),
                             ),
                             const SizedBox(height: 2),
@@ -139,10 +137,9 @@ class _AtendimentoScreenState extends ConsumerState<AtendimentoScreen> {
                       Text(
                         'Tempo de atendimento',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurface
-                                  .withValues(alpha: 0.5),
-                              letterSpacing: 1.2,
-                            ),
+                          color: colorScheme.onSurface.withValues(alpha: 0.5),
+                          letterSpacing: 1.2,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       Text(

@@ -8,19 +8,28 @@ class SessaoRepository {
   final SupabaseClient _client;
 
   Future<Sessao> abrirSessao({required String gestorId}) async {
-    final data = await _client.from('sessoes').insert({
-      'gestor_id': gestorId,
-      'status': StatusSessao.aberta.name,
-      'aberta_em': DateTime.now().toIso8601String(),
-    }).select().single();
+    final data = await _client
+        .from('sessoes')
+        .insert({
+          'gestor_id': gestorId,
+          'status': StatusSessao.aberta.name,
+          'aberta_em': DateTime.now().toIso8601String(),
+        })
+        .select()
+        .single();
     return Sessao.fromMap(data);
   }
 
   Future<Sessao> encerrarSessao(String id) async {
-    final data = await _client.from('sessoes').update({
-      'status': StatusSessao.encerrada.name,
-      'encerrada_em': DateTime.now().toIso8601String(),
-    }).eq('id', id).select().single();
+    final data = await _client
+        .from('sessoes')
+        .update({
+          'status': StatusSessao.encerrada.name,
+          'encerrada_em': DateTime.now().toIso8601String(),
+        })
+        .eq('id', id)
+        .select()
+        .single();
     return Sessao.fromMap(data);
   }
 
@@ -47,7 +56,9 @@ class SessaoRepository {
   Future<List<MediumEntidade>> listarMediumEntidades() async {
     final data = await _client
         .from('medium_entidades')
-        .select('id, medium_id, entidade_id, mediuns(nome, ativo), entidades(nome, ativa)');
+        .select(
+          'id, medium_id, entidade_id, mediuns(nome, ativo), entidades(nome, ativa)',
+        );
     return (data as List)
         .where((e) {
           final m = e['mediuns'] as Map<String, dynamic>?;
@@ -72,15 +83,20 @@ class SessaoRepository {
   }
 
   Future<List<MediumEntidade>> listarMediumEntidadesDaSessao(
-      String sessaoId) async {
+    String sessaoId,
+  ) async {
     final data = await _client
         .from('sessao_medium_entidades')
         .select(
-            'medium_entidades(id, medium_id, entidade_id, mediuns(nome), entidades(nome))')
+          'medium_entidades(id, medium_id, entidade_id, mediuns(nome), entidades(nome))',
+        )
         .eq('sessao_id', sessaoId);
     return (data as List)
-        .map((e) =>
-            MediumEntidade.fromMap(e['medium_entidades'] as Map<String, dynamic>))
+        .map(
+          (e) => MediumEntidade.fromMap(
+            e['medium_entidades'] as Map<String, dynamic>,
+          ),
+        )
         .toList();
   }
 }

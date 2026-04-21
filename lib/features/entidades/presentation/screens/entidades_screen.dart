@@ -26,7 +26,8 @@ class EntidadesScreen extends ConsumerWidget {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.7,
                       child: const Center(
-                          child: Text('Nenhuma entidade cadastrada.')),
+                        child: Text('Nenhuma entidade cadastrada.'),
+                      ),
                     ),
                   ],
                 )
@@ -36,37 +37,40 @@ class EntidadesScreen extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final entidade = entidades[index];
                     return ListTile(
-                    leading: FaIcon(
-                      FontAwesomeIcons.ghost,
-                      size: 18,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    title: Text(entidade.nome),
-                    subtitle: entidade.descricao.isNotEmpty
-                        ? Text(entidade.descricao)
-                        : null,
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Switch(
-                          value: entidade.ativa,
-                          onChanged: (_) => ref
-                              .read(entidadesGestorProvider.notifier)
-                              .alternarAtiva(entidade.id, ativa: entidade.ativa),
-                        ),
-                        IconButton(
-                          key: Key('btn_editar_${entidade.id}'),
-                          icon: const Icon(Icons.edit_outlined),
-                          onPressed: () => context.push(
-                            '/gestor/entidades/${entidade.id}',
-                            extra: entidade,
+                      leading: FaIcon(
+                        FontAwesomeIcons.ghost,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      title: Text(entidade.nome),
+                      subtitle: entidade.descricao.isNotEmpty
+                          ? Text(entidade.descricao)
+                          : null,
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Switch(
+                            value: entidade.ativa,
+                            onChanged: (_) => ref
+                                .read(entidadesGestorProvider.notifier)
+                                .alternarAtiva(
+                                  entidade.id,
+                                  ativa: entidade.ativa,
+                                ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                          IconButton(
+                            key: Key('btn_editar_${entidade.id}'),
+                            icon: const Icon(Icons.edit_outlined),
+                            onPressed: () => context.push(
+                              '/gestor/entidades/${entidade.id}',
+                              extra: entidade,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

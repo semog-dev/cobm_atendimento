@@ -58,16 +58,14 @@ void main() {
         filaNotifierProvider.overrideWith(() => _FakeFilaNotifier(fila)),
         sessaoNotifierProvider.overrideWith(() => _FakeSessaoNotifier()),
       ],
-      child: MaterialApp.router(
-        theme: AppTheme.light,
-        routerConfig: router,
-      ),
+      child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
     );
   }
 
   group('FilaDetalheScreen', () {
-    testWidgets('should mostrar entradas da fila do medium_entidade',
-        (tester) async {
+    testWidgets('should mostrar entradas da fila do medium_entidade', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildWidget(fila: [entradaFilaFake]));
       await tester.pumpAndSettle();
 
@@ -75,13 +73,15 @@ void main() {
       expect(find.text(entradaFilaFake.clienteNome), findsOneWidget);
     });
 
-    testWidgets('should exibir btn_chamar_proximo quando há entradas aguardando',
-        (tester) async {
-      await tester.pumpWidget(buildWidget(fila: [entradaFilaFake]));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'should exibir btn_chamar_proximo quando há entradas aguardando',
+      (tester) async {
+        await tester.pumpWidget(buildWidget(fila: [entradaFilaFake]));
+        await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('btn_chamar_proximo')), findsOneWidget);
-    });
+        expect(find.byKey(const Key('btn_chamar_proximo')), findsOneWidget);
+      },
+    );
 
     testWidgets('should exibir btn_adicionar_cliente', (tester) async {
       await tester.pumpWidget(buildWidget());
@@ -90,13 +90,15 @@ void main() {
       expect(find.byKey(const Key('btn_adicionar_cliente')), findsOneWidget);
     });
 
-    testWidgets('should chamar proximo ao pressionar btn_chamar_proximo',
-        (tester) async {
-      when(() => mockFilaRepository.chamarProximo(any()))
-          .thenAnswer((_) async => entradaFilaFake.copyWith(
-                status: StatusFila.emAtendimento,
-                chamadoEm: DateTime(2024, 1, 1, 9, 5),
-              ));
+    testWidgets('should chamar proximo ao pressionar btn_chamar_proximo', (
+      tester,
+    ) async {
+      when(() => mockFilaRepository.chamarProximo(any())).thenAnswer(
+        (_) async => entradaFilaFake.copyWith(
+          status: StatusFila.emAtendimento,
+          chamadoEm: DateTime(2024, 1, 1, 9, 5),
+        ),
+      );
 
       await tester.pumpWidget(buildWidget(fila: [entradaFilaFake]));
       await tester.pumpAndSettle();
@@ -104,26 +106,30 @@ void main() {
       await tester.tap(find.byKey(const Key('btn_chamar_proximo')));
       await tester.pumpAndSettle();
 
-      verify(() => mockFilaRepository.chamarProximo(entradaFilaFake.id))
-          .called(1);
+      verify(
+        () => mockFilaRepository.chamarProximo(entradaFilaFake.id),
+      ).called(1);
     });
 
-    testWidgets('should navegar para atendimento ao pressionar btn_atendimento',
-        (tester) async {
-      final entradaEmAtendimento = entradaFilaFake.copyWith(
-        status: StatusFila.emAtendimento,
-        chamadoEm: DateTime(2024, 1, 1, 9, 5),
-      );
+    testWidgets(
+      'should navegar para atendimento ao pressionar btn_atendimento',
+      (tester) async {
+        final entradaEmAtendimento = entradaFilaFake.copyWith(
+          status: StatusFila.emAtendimento,
+          chamadoEm: DateTime(2024, 1, 1, 9, 5),
+        );
 
-      await tester.pumpWidget(buildWidget(fila: [entradaEmAtendimento]));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildWidget(fila: [entradaEmAtendimento]));
+        await tester.pumpAndSettle();
 
-      await tester
-          .tap(find.byKey(Key('btn_atendimento_${entradaEmAtendimento.id}')));
-      await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(Key('btn_atendimento_${entradaEmAtendimento.id}')),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('atendimento_screen')), findsOneWidget);
-    });
+        expect(find.byKey(const Key('atendimento_screen')), findsOneWidget);
+      },
+    );
   });
 }
 

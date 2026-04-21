@@ -6,13 +6,15 @@ import 'package:cobm_atendimento/app.dart';
 
 void main() {
   testWidgets('should renderizar app sem crash', (WidgetTester tester) async {
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        authProvider.overrideWith(() => _FakeAuthNotifier()),
-        authInicializandoProvider.overrideWith((ref) => false),
-      ],
-      child: const App(),
-    ));
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith(() => _FakeAuthNotifier()),
+          authInicializandoProvider.overrideWith((ref) => false),
+        ],
+        child: const App(),
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('email_field')), findsOneWidget);

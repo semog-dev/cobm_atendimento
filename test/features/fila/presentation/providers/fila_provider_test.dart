@@ -16,9 +16,7 @@ void main() {
   setUp(() {
     mockRepository = MockFilaRepository();
     container = ProviderContainer(
-      overrides: [
-        filaRepositoryProvider.overrideWithValue(mockRepository),
-      ],
+      overrides: [filaRepositoryProvider.overrideWithValue(mockRepository)],
     );
   });
 
@@ -31,8 +29,9 @@ void main() {
     });
 
     test('should atualizar estado ao assinar stream da sessão', () async {
-      when(() => mockRepository.listarPorSessaoStream(any()))
-          .thenAnswer((_) => Stream.value([entradaFilaFake]));
+      when(
+        () => mockRepository.listarPorSessaoStream(any()),
+      ).thenAnswer((_) => Stream.value([entradaFilaFake]));
 
       container
           .read(filaNotifierProvider.notifier)
@@ -49,10 +48,12 @@ void main() {
         status: StatusFila.emAtendimento,
         chamadoEm: DateTime(2024, 1, 1, 9, 5),
       );
-      when(() => mockRepository.listarPorSessaoStream(any()))
-          .thenAnswer((_) => Stream.value([entradaFilaFake]));
-      when(() => mockRepository.chamarProximo(any()))
-          .thenAnswer((_) async => chamada);
+      when(
+        () => mockRepository.listarPorSessaoStream(any()),
+      ).thenAnswer((_) => Stream.value([entradaFilaFake]));
+      when(
+        () => mockRepository.chamarProximo(any()),
+      ).thenAnswer((_) async => chamada);
 
       container
           .read(filaNotifierProvider.notifier)
@@ -64,8 +65,10 @@ void main() {
           .chamarProximo('uuid-fila-001');
 
       final state = container.read(filaNotifierProvider);
-      expect(state.any((e) => e.id == 'uuid-fila-001' && e.isEmAtendimento),
-          isTrue);
+      expect(
+        state.any((e) => e.id == 'uuid-fila-001' && e.isEmAtendimento),
+        isTrue,
+      );
     });
 
     test('should encerrar atendimento e atualizar estado', () async {
@@ -74,10 +77,12 @@ void main() {
         encerradoEm: DateTime(2024, 1, 1, 9, 30),
         duracaoSegundos: 1800,
       );
-      when(() => mockRepository.listarPorSessaoStream(any()))
-          .thenAnswer((_) => Stream.value([entradaFilaFake]));
-      when(() => mockRepository.encerrarAtendimento(any()))
-          .thenAnswer((_) async => encerrada);
+      when(
+        () => mockRepository.listarPorSessaoStream(any()),
+      ).thenAnswer((_) => Stream.value([entradaFilaFake]));
+      when(
+        () => mockRepository.encerrarAtendimento(any()),
+      ).thenAnswer((_) async => encerrada);
 
       container
           .read(filaNotifierProvider.notifier)
@@ -89,25 +94,33 @@ void main() {
           .encerrarAtendimento('uuid-fila-001');
 
       final state = container.read(filaNotifierProvider);
-      expect(state.any((e) => e.id == 'uuid-fila-001' && e.isConcluido),
-          isTrue);
+      expect(
+        state.any((e) => e.id == 'uuid-fila-001' && e.isConcluido),
+        isTrue,
+      );
     });
   });
 
   group('FilaNotifier.entrarNaFila', () {
     test('deve adicionar entrada ao estado quando entrar na fila', () async {
-      when(() => mockRepository.ultimaPosicao(
-            sessaoId: any(named: 'sessaoId'),
-            mediumEntidadeId: any(named: 'mediumEntidadeId'),
-          )).thenAnswer((_) async => 0);
-      when(() => mockRepository.entrarNaFila(
-            sessaoId: any(named: 'sessaoId'),
-            clienteNome: any(named: 'clienteNome'),
-            mediumEntidadeId: any(named: 'mediumEntidadeId'),
-            posicao: any(named: 'posicao'),
-          )).thenAnswer((_) async => entradaFilaFake);
+      when(
+        () => mockRepository.ultimaPosicao(
+          sessaoId: any(named: 'sessaoId'),
+          mediumEntidadeId: any(named: 'mediumEntidadeId'),
+        ),
+      ).thenAnswer((_) async => 0);
+      when(
+        () => mockRepository.entrarNaFila(
+          sessaoId: any(named: 'sessaoId'),
+          clienteNome: any(named: 'clienteNome'),
+          mediumEntidadeId: any(named: 'mediumEntidadeId'),
+          posicao: any(named: 'posicao'),
+        ),
+      ).thenAnswer((_) async => entradaFilaFake);
 
-      await container.read(filaNotifierProvider.notifier).entrarNaFila(
+      await container
+          .read(filaNotifierProvider.notifier)
+          .entrarNaFila(
             sessaoId: 'uuid-sess-001',
             clienteNome: 'João Silva',
             mediumEntidadeId: 'uuid-me-001',
@@ -121,8 +134,9 @@ void main() {
   group('FilaNotifier.cancelarEntrada', () {
     test('deve atualizar entrada para cancelado ao cancelar', () async {
       final cancelada = entradaFilaFake.copyWith(status: StatusFila.cancelado);
-      when(() => mockRepository.cancelarEntrada(any()))
-          .thenAnswer((_) async => cancelada);
+      when(
+        () => mockRepository.cancelarEntrada(any()),
+      ).thenAnswer((_) async => cancelada);
 
       await container
           .read(filaNotifierProvider.notifier)
@@ -138,8 +152,9 @@ void main() {
 
   group('FilaNotifier — error handling', () {
     test('should propagar exceção when chamarProximo falha', () async {
-      when(() => mockRepository.chamarProximo(any()))
-          .thenThrow(Exception('DB error'));
+      when(
+        () => mockRepository.chamarProximo(any()),
+      ).thenThrow(Exception('DB error'));
 
       expect(
         () => container
@@ -150,8 +165,9 @@ void main() {
     });
 
     test('should propagar exceção when encerrarAtendimento falha', () async {
-      when(() => mockRepository.encerrarAtendimento(any()))
-          .thenThrow(Exception('DB error'));
+      when(
+        () => mockRepository.encerrarAtendimento(any()),
+      ).thenThrow(Exception('DB error'));
 
       expect(
         () => container
@@ -162,19 +178,25 @@ void main() {
     });
 
     test('should propagar exceção when entrarNaFila falha', () async {
-      when(() => mockRepository.ultimaPosicao(
-            sessaoId: any(named: 'sessaoId'),
-            mediumEntidadeId: any(named: 'mediumEntidadeId'),
-          )).thenAnswer((_) async => 0);
-      when(() => mockRepository.entrarNaFila(
-            sessaoId: any(named: 'sessaoId'),
-            clienteNome: any(named: 'clienteNome'),
-            mediumEntidadeId: any(named: 'mediumEntidadeId'),
-            posicao: any(named: 'posicao'),
-          )).thenThrow(Exception('DB error'));
+      when(
+        () => mockRepository.ultimaPosicao(
+          sessaoId: any(named: 'sessaoId'),
+          mediumEntidadeId: any(named: 'mediumEntidadeId'),
+        ),
+      ).thenAnswer((_) async => 0);
+      when(
+        () => mockRepository.entrarNaFila(
+          sessaoId: any(named: 'sessaoId'),
+          clienteNome: any(named: 'clienteNome'),
+          mediumEntidadeId: any(named: 'mediumEntidadeId'),
+          posicao: any(named: 'posicao'),
+        ),
+      ).thenThrow(Exception('DB error'));
 
       expect(
-        () => container.read(filaNotifierProvider.notifier).entrarNaFila(
+        () => container
+            .read(filaNotifierProvider.notifier)
+            .entrarNaFila(
               sessaoId: 'uuid-sess-001',
               clienteNome: 'João',
               mediumEntidadeId: 'uuid-me-001',
@@ -184,8 +206,9 @@ void main() {
     });
 
     test('should propagar exceção when cancelarEntrada falha', () async {
-      when(() => mockRepository.cancelarEntrada(any()))
-          .thenThrow(Exception('DB error'));
+      when(
+        () => mockRepository.cancelarEntrada(any()),
+      ).thenThrow(Exception('DB error'));
 
       expect(
         () => container
@@ -196,10 +219,12 @@ void main() {
     });
 
     test('should manter estado anterior quando chamarProximo falha', () async {
-      when(() => mockRepository.listarPorSessaoStream(any()))
-          .thenAnswer((_) => Stream.value([entradaFilaFake]));
-      when(() => mockRepository.chamarProximo(any()))
-          .thenThrow(Exception('DB error'));
+      when(
+        () => mockRepository.listarPorSessaoStream(any()),
+      ).thenAnswer((_) => Stream.value([entradaFilaFake]));
+      when(
+        () => mockRepository.chamarProximo(any()),
+      ).thenThrow(Exception('DB error'));
 
       container
           .read(filaNotifierProvider.notifier)
@@ -221,8 +246,9 @@ void main() {
     test('should atualizar estado a cada evento do stream', () async {
       final controller = StreamController<List<EntradaFila>>();
 
-      when(() => mockRepository.listarPorSessaoStream(any()))
-          .thenAnswer((_) => controller.stream);
+      when(
+        () => mockRepository.listarPorSessaoStream(any()),
+      ).thenAnswer((_) => controller.stream);
 
       container
           .read(filaNotifierProvider.notifier)
@@ -238,7 +264,10 @@ void main() {
       );
       controller.add([segunda]);
       await Future.delayed(Duration.zero);
-      expect(container.read(filaNotifierProvider).first.isEmAtendimento, isTrue);
+      expect(
+        container.read(filaNotifierProvider).first.isEmAtendimento,
+        isTrue,
+      );
 
       await controller.close();
     });
@@ -246,8 +275,9 @@ void main() {
     test('should limpar estado quando stream emite lista vazia', () async {
       final controller = StreamController<List<EntradaFila>>();
 
-      when(() => mockRepository.listarPorSessaoStream(any()))
-          .thenAnswer((_) => controller.stream);
+      when(
+        () => mockRepository.listarPorSessaoStream(any()),
+      ).thenAnswer((_) => controller.stream);
 
       container
           .read(filaNotifierProvider.notifier)
@@ -269,8 +299,7 @@ void main() {
       final controller2 = StreamController<List<EntradaFila>>();
       var callCount = 0;
 
-      when(() => mockRepository.listarPorSessaoStream(any()))
-          .thenAnswer((_) {
+      when(() => mockRepository.listarPorSessaoStream(any())).thenAnswer((_) {
         callCount++;
         return callCount == 1 ? controller1.stream : controller2.stream;
       });
@@ -303,8 +332,9 @@ void main() {
     test('should cancelar stream ao descartar o provider', () async {
       final controller = StreamController<List<EntradaFila>>();
 
-      when(() => mockRepository.listarPorSessaoStream(any()))
-          .thenAnswer((_) => controller.stream);
+      when(
+        () => mockRepository.listarPorSessaoStream(any()),
+      ).thenAnswer((_) => controller.stream);
 
       container
           .read(filaNotifierProvider.notifier)

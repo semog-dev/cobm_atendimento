@@ -29,58 +29,59 @@ class SessaoScreen extends ConsumerWidget {
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-              SliverToBoxAdapter(
-                child: sessao == null
-                    ? _SessaoFechadaView()
-                    : _SessaoAbertaView(sessao: sessao),
-              ),
-              SliverToBoxAdapter(
-                child: historicoState.when(
-                  loading: () => const SizedBox.shrink(),
-                  error: (_, _) => const SizedBox.shrink(),
-                  data: (historico) {
-                    final encerradas =
-                        historico.where((s) => s.isEncerrada).toList();
-                    if (encerradas.isEmpty) return const SizedBox.shrink();
+                SliverToBoxAdapter(
+                  child: sessao == null
+                      ? _SessaoFechadaView()
+                      : _SessaoAbertaView(sessao: sessao),
+                ),
+                SliverToBoxAdapter(
+                  child: historicoState.when(
+                    loading: () => const SizedBox.shrink(),
+                    error: (_, _) => const SizedBox.shrink(),
+                    data: (historico) {
+                      final encerradas = historico
+                          .where((s) => s.isEncerrada)
+                          .toList();
+                      if (encerradas.isEmpty) return const SizedBox.shrink();
 
-                    return Column(
-                      key: const Key('historico_sessoes'),
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
-                          child: Text(
-                            'HISTÓRICO',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1.2,
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withValues(alpha: 0.4),
+                      return Column(
+                        key: const Key('historico_sessoes'),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+                            child: Text(
+                              'HISTÓRICO',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 1.2,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.4),
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
-                            children: encerradas
-                                .map((s) => Padding(
-                                      padding:
-                                          const EdgeInsets.only(bottom: 8),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              children: encerradas
+                                  .map(
+                                    (s) => Padding(
+                                      padding: const EdgeInsets.only(bottom: 8),
                                       child: _SessaoHistoricoCard(sessao: s),
-                                    ))
-                                .toList(),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-                    );
-                  },
+                          const SizedBox(height: 16),
+                        ],
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
             ),
           );
         },
@@ -113,8 +114,8 @@ class _SessaoFechadaView extends StatelessWidget {
           Text(
             'Nenhuma sessão aberta',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: colorScheme.onSurface.withValues(alpha: 0.5),
-                ),
+              color: colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
           ),
           const SizedBox(height: 32),
           ElevatedButton.icon(
@@ -136,8 +137,9 @@ class _SessaoAbertaView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mediumEntidadesState =
-        ref.watch(mediumEntidadesDaSessaoProvider(sessao.id));
+    final mediumEntidadesState = ref.watch(
+      mediumEntidadesDaSessaoProvider(sessao.id),
+    );
     final colorScheme = Theme.of(context).colorScheme;
 
     return Padding(
@@ -151,9 +153,7 @@ class _SessaoAbertaView extends ConsumerWidget {
             decoration: BoxDecoration(
               color: Colors.green.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.green.withValues(alpha: 0.3),
-              ),
+              border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
@@ -172,17 +172,16 @@ class _SessaoAbertaView extends ConsumerWidget {
                     children: [
                       Text(
                         'Sessão em andamento',
-                        style:
-                            Theme.of(context).textTheme.titleSmall?.copyWith(
-                                  color: Colors.green.shade700,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          color: Colors.green.shade700,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       Text(
                         'Aberta em ${_formatarData(sessao.abertaEm)}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.green.shade600,
-                            ),
+                          color: Colors.green.shade600,
+                        ),
                       ),
                     ],
                   ),
@@ -211,7 +210,8 @@ class _SessaoAbertaView extends ConsumerWidget {
                 ? Text(
                     'Nenhum médium/entidade vinculado.',
                     style: TextStyle(
-                        color: colorScheme.onSurface.withValues(alpha: 0.4)),
+                      color: colorScheme.onSurface.withValues(alpha: 0.4),
+                    ),
                   )
                 : Column(
                     children: lista
@@ -220,13 +220,16 @@ class _SessaoAbertaView extends ConsumerWidget {
                             padding: const EdgeInsets.only(bottom: 8),
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 12),
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
                               decoration: BoxDecoration(
                                 color: colorScheme.surface,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: colorScheme.outlineVariant
-                                      .withValues(alpha: 0.5),
+                                  color: colorScheme.outlineVariant.withValues(
+                                    alpha: 0.5,
+                                  ),
                                 ),
                               ),
                               child: Row(
@@ -239,8 +242,9 @@ class _SessaoAbertaView extends ConsumerWidget {
                                   const SizedBox(width: 10),
                                   Text(
                                     '${me.entidadeNome} — ${me.mediumNome}',
-                                    style:
-                                        Theme.of(context).textTheme.bodyMedium,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.bodyMedium,
                                   ),
                                 ],
                               ),
@@ -319,23 +323,22 @@ class _SessaoHistoricoCard extends StatelessWidget {
               children: [
                 Text(
                   _formatarData(sessao.abertaEm),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
                 ),
                 if (sessao.encerradaEm != null)
                   Text(
                     'Encerrada em ${_formatarData(sessao.encerradaEm!)}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurface.withValues(alpha: 0.4),
-                        ),
+                      color: colorScheme.onSurface.withValues(alpha: 0.4),
+                    ),
                   ),
               ],
             ),
           ),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
               color: colorScheme.onSurface.withValues(alpha: 0.06),
               borderRadius: BorderRadius.circular(20),

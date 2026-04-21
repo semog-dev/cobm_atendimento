@@ -8,20 +8,20 @@ class MockSupabaseClient extends Mock implements SupabaseClient {}
 class MockGoTrueClient extends Mock implements GoTrueClient {}
 
 User _fakeUser() => User(
-      id: 'uuid-123',
-      appMetadata: {},
-      userMetadata: {},
-      aud: 'authenticated',
-      createdAt: '2024-01-01T00:00:00.000',
-    );
+  id: 'uuid-123',
+  appMetadata: {},
+  userMetadata: {},
+  aud: 'authenticated',
+  createdAt: '2024-01-01T00:00:00.000',
+);
 
 AuthResponse _fakeAuthResponse() => AuthResponse(
-      session: Session(
-        accessToken: 'token',
-        tokenType: 'bearer',
-        user: _fakeUser(),
-      ),
-    );
+  session: Session(
+    accessToken: 'token',
+    tokenType: 'bearer',
+    user: _fakeUser(),
+  ),
+);
 
 void main() {
   late MockSupabaseClient mockClient;
@@ -37,38 +37,50 @@ void main() {
 
   group('AuthRepository.login', () {
     test('should retornar AuthResponse when credenciais válidas', () async {
-      when(() => mockAuth.signInWithPassword(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          )).thenAnswer((_) async => _fakeAuthResponse());
+      when(
+        () => mockAuth.signInWithPassword(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async => _fakeAuthResponse());
 
-      final result =
-          await repository.login(email: 'joao@email.com', password: '123456');
+      final result = await repository.login(
+        email: 'joao@email.com',
+        password: '123456',
+      );
 
       expect(result.user, isNotNull);
       expect(result.user!.id, 'uuid-123');
     });
 
-    test('should chamar signInWithPassword com email e senha corretos',
-        () async {
-      when(() => mockAuth.signInWithPassword(
+    test(
+      'should chamar signInWithPassword com email e senha corretos',
+      () async {
+        when(
+          () => mockAuth.signInWithPassword(
             email: any(named: 'email'),
             password: any(named: 'password'),
-          )).thenAnswer((_) async => _fakeAuthResponse());
+          ),
+        ).thenAnswer((_) async => _fakeAuthResponse());
 
-      await repository.login(email: 'joao@email.com', password: '123456');
+        await repository.login(email: 'joao@email.com', password: '123456');
 
-      verify(() => mockAuth.signInWithPassword(
+        verify(
+          () => mockAuth.signInWithPassword(
             email: 'joao@email.com',
             password: '123456',
-          )).called(1);
-    });
+          ),
+        ).called(1);
+      },
+    );
 
     test('should lançar AuthException when credenciais inválidas', () {
-      when(() => mockAuth.signInWithPassword(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          )).thenThrow(AuthException('Invalid login credentials'));
+      when(
+        () => mockAuth.signInWithPassword(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(AuthException('Invalid login credentials'));
 
       expect(
         () => repository.login(email: 'errado@email.com', password: 'errado'),
@@ -79,41 +91,50 @@ void main() {
 
   group('AuthRepository.cadastrar', () {
     test('should retornar AuthResponse when cadastro bem-sucedido', () async {
-      when(() => mockAuth.signUp(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          )).thenAnswer((_) async => _fakeAuthResponse());
+      when(
+        () => mockAuth.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async => _fakeAuthResponse());
 
       final result = await repository.cadastrar(
-          email: 'novo@email.com', password: '123456');
+        email: 'novo@email.com',
+        password: '123456',
+      );
 
       expect(result.user, isNotNull);
       expect(result.user!.id, 'uuid-123');
     });
 
     test('should chamar signUp com email e senha corretos', () async {
-      when(() => mockAuth.signUp(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          )).thenAnswer((_) async => _fakeAuthResponse());
+      when(
+        () => mockAuth.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenAnswer((_) async => _fakeAuthResponse());
 
       await repository.cadastrar(email: 'novo@email.com', password: '123456');
 
-      verify(() => mockAuth.signUp(
-            email: 'novo@email.com',
-            password: '123456',
-          )).called(1);
+      verify(
+        () => mockAuth.signUp(email: 'novo@email.com', password: '123456'),
+      ).called(1);
     });
 
     test('should lançar AuthException when email já cadastrado', () {
-      when(() => mockAuth.signUp(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          )).thenThrow(AuthException('User already registered'));
+      when(
+        () => mockAuth.signUp(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(AuthException('User already registered'));
 
       expect(
         () => repository.cadastrar(
-            email: 'existente@email.com', password: '123456'),
+          email: 'existente@email.com',
+          password: '123456',
+        ),
         throwsA(isA<AuthException>()),
       );
     });
@@ -129,8 +150,7 @@ void main() {
     });
 
     test('should lançar AuthException when signOut falha', () {
-      when(() => mockAuth.signOut())
-          .thenThrow(AuthException('Logout failed'));
+      when(() => mockAuth.signOut()).thenThrow(AuthException('Logout failed'));
 
       expect(() => repository.logout(), throwsA(isA<AuthException>()));
     });

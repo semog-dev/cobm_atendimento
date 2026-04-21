@@ -15,7 +15,10 @@ Widget _buildWidget(MockAuthRepository mockRepository) {
     initialLocation: '/login',
     routes: [
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
-      GoRoute(path: '/cadastro', builder: (context, state) => const CadastroScreen()),
+      GoRoute(
+        path: '/cadastro',
+        builder: (context, state) => const CadastroScreen(),
+      ),
     ],
   );
 
@@ -63,7 +66,9 @@ void main() {
       await tester.pumpWidget(_buildWidget(mockRepository));
 
       await tester.enterText(
-          find.byKey(const Key('email_field')), 'teste@email.com');
+        find.byKey(const Key('email_field')),
+        'teste@email.com',
+      );
       await tester.tap(find.byKey(const Key('btn_entrar')));
       await tester.pump();
 
@@ -71,24 +76,27 @@ void main() {
     });
 
     testWidgets('deve chamar login quando formulário é válido', (tester) async {
-      when(() => mockRepository.login(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          )).thenThrow(Exception('erro simulado'));
+      when(
+        () => mockRepository.login(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(Exception('erro simulado'));
 
       await tester.pumpWidget(_buildWidget(mockRepository));
 
       await tester.enterText(
-          find.byKey(const Key('email_field')), 'teste@email.com');
-      await tester.enterText(
-          find.byKey(const Key('senha_field')), '123456');
+        find.byKey(const Key('email_field')),
+        'teste@email.com',
+      );
+      await tester.enterText(find.byKey(const Key('senha_field')), '123456');
       await tester.tap(find.byKey(const Key('btn_entrar')));
       await tester.pump();
 
-      verify(() => mockRepository.login(
-            email: 'teste@email.com',
-            password: '123456',
-          )).called(1);
+      verify(
+        () =>
+            mockRepository.login(email: 'teste@email.com', password: '123456'),
+      ).called(1);
     });
   });
 }

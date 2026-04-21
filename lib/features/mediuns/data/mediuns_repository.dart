@@ -22,11 +22,7 @@ class MediunsRepository {
   }
 
   Future<Medium> buscarPorId(String id) async {
-    final data = await _client
-        .from('mediuns')
-        .select()
-        .eq('id', id)
-        .single();
+    final data = await _client.from('mediuns').select().eq('id', id).single();
     return Medium.fromMap(data);
   }
 

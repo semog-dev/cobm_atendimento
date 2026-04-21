@@ -18,18 +18,19 @@ final historicoSessoesProvider = FutureProvider<List<Sessao>>((ref) {
 
 final mediumEntidadesDisponiveisProvider =
     FutureProvider.autoDispose<List<MediumEntidade>>((ref) {
-  return ref.read(sessaoRepositoryProvider).listarMediumEntidades();
-});
+      return ref.read(sessaoRepositoryProvider).listarMediumEntidades();
+    });
 
 final mediumEntidadesDaSessaoProvider =
     FutureProvider.family<List<MediumEntidade>, String>((ref, sessaoId) {
-  return ref
-      .read(sessaoRepositoryProvider)
-      .listarMediumEntidadesDaSessao(sessaoId);
-});
+      return ref
+          .read(sessaoRepositoryProvider)
+          .listarMediumEntidadesDaSessao(sessaoId);
+    });
 
-final sessaoNotifierProvider =
-    AsyncNotifierProvider<SessaoNotifier, Sessao?>(SessaoNotifier.new);
+final sessaoNotifierProvider = AsyncNotifierProvider<SessaoNotifier, Sessao?>(
+  SessaoNotifier.new,
+);
 
 class SessaoNotifier extends AsyncNotifier<Sessao?> {
   SessaoRepository get _repository => ref.read(sessaoRepositoryProvider);

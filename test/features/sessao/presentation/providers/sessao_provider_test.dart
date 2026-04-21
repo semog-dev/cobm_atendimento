@@ -15,9 +15,7 @@ void main() {
   setUp(() {
     mockRepository = MockSessaoRepository();
     container = ProviderContainer(
-      overrides: [
-        sessaoRepositoryProvider.overrideWithValue(mockRepository),
-      ],
+      overrides: [sessaoRepositoryProvider.overrideWithValue(mockRepository)],
     );
   });
 
@@ -25,8 +23,9 @@ void main() {
 
   group('sessaoAtualProvider', () {
     test('deve retornar sessão aberta quando existe', () async {
-      when(() => mockRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => sessaoFake);
+      when(
+        () => mockRepository.buscarSessaoAberta(),
+      ).thenAnswer((_) async => sessaoFake);
 
       final result = await container.read(sessaoAtualProvider.future);
 
@@ -35,8 +34,9 @@ void main() {
     });
 
     test('deve retornar null quando não há sessão aberta', () async {
-      when(() => mockRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => null);
+      when(
+        () => mockRepository.buscarSessaoAberta(),
+      ).thenAnswer((_) async => null);
 
       final result = await container.read(sessaoAtualProvider.future);
 
@@ -46,10 +46,12 @@ void main() {
 
   group('SessaoNotifier.abrirSessao', () {
     test('deve atualizar estado com sessão aberta', () async {
-      when(() => mockRepository.abrirSessao(gestorId: any(named: 'gestorId')))
-          .thenAnswer((_) async => sessaoFake);
-      when(() => mockRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => null);
+      when(
+        () => mockRepository.abrirSessao(gestorId: any(named: 'gestorId')),
+      ).thenAnswer((_) async => sessaoFake);
+      when(
+        () => mockRepository.buscarSessaoAberta(),
+      ).thenAnswer((_) async => null);
 
       await container
           .read(sessaoNotifierProvider.notifier)
@@ -67,10 +69,12 @@ void main() {
         encerradaEm: DateTime(2024, 1, 1, 12, 0),
       );
 
-      when(() => mockRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => null);
-      when(() => mockRepository.encerrarSessao(any()))
-          .thenAnswer((_) async => encerrada);
+      when(
+        () => mockRepository.buscarSessaoAberta(),
+      ).thenAnswer((_) async => null);
+      when(
+        () => mockRepository.encerrarSessao(any()),
+      ).thenAnswer((_) async => encerrada);
 
       await container
           .read(sessaoNotifierProvider.notifier)
@@ -81,10 +85,12 @@ void main() {
     });
 
     test('should propagar exceção when encerrarSessao falha', () async {
-      when(() => mockRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => null);
-      when(() => mockRepository.encerrarSessao(any()))
-          .thenThrow(Exception('DB error'));
+      when(
+        () => mockRepository.buscarSessaoAberta(),
+      ).thenAnswer((_) async => null);
+      when(
+        () => mockRepository.encerrarSessao(any()),
+      ).thenThrow(Exception('DB error'));
 
       expect(
         () => container
@@ -96,33 +102,37 @@ void main() {
   });
 
   group('SessaoNotifier — error handling', () {
-    test('should expor AsyncError when buscarSessaoAberta falha no build',
-        () async {
-      when(() => mockRepository.buscarSessaoAberta())
-          .thenThrow(Exception('Sem conexão'));
+    test(
+      'should expor AsyncError when buscarSessaoAberta falha no build',
+      () async {
+        when(
+          () => mockRepository.buscarSessaoAberta(),
+        ).thenThrow(Exception('Sem conexão'));
 
-      await expectLater(
-        container.read(sessaoNotifierProvider.future),
-        throwsA(isA<Exception>()),
-      );
+        await expectLater(
+          container.read(sessaoNotifierProvider.future),
+          throwsA(isA<Exception>()),
+        );
 
-      final state = container.read(sessaoNotifierProvider);
-      expect(state, isA<AsyncError>());
-    });
+        final state = container.read(sessaoNotifierProvider);
+        expect(state, isA<AsyncError>());
+      },
+    );
 
     test('should propagar exceção when abrirSessao falha', () async {
-      when(() => mockRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => null);
-      when(() => mockRepository.abrirSessao(gestorId: any(named: 'gestorId')))
-          .thenThrow(Exception('DB error'));
+      when(
+        () => mockRepository.buscarSessaoAberta(),
+      ).thenAnswer((_) async => null);
+      when(
+        () => mockRepository.abrirSessao(gestorId: any(named: 'gestorId')),
+      ).thenThrow(Exception('DB error'));
 
       await container.read(sessaoNotifierProvider.future);
 
       expect(
-        () => container.read(sessaoNotifierProvider.notifier).abrirSessao(
-              gestorId: 'uuid-456',
-              mediumEntidadeIds: {},
-            ),
+        () => container
+            .read(sessaoNotifierProvider.notifier)
+            .abrirSessao(gestorId: 'uuid-456', mediumEntidadeIds: {}),
         throwsA(isA<Exception>()),
       );
     });

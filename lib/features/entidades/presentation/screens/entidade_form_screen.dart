@@ -29,8 +29,9 @@ class _EntidadeFormScreenState extends ConsumerState<EntidadeFormScreen> {
   void initState() {
     super.initState();
     _nomeController = TextEditingController(text: widget.entidade?.nome ?? '');
-    _descricaoController =
-        TextEditingController(text: widget.entidade?.descricao ?? '');
+    _descricaoController = TextEditingController(
+      text: widget.entidade?.descricao ?? '',
+    );
   }
 
   @override
@@ -77,9 +78,9 @@ class _EntidadeFormScreenState extends ConsumerState<EntidadeFormScreen> {
 
     // Carrega vínculos existentes uma única vez ao editar
     if (_editando && !_vinculosCarregados) {
-      ref
-          .watch(mediunsVinculadosProvider(widget.entidade!.id))
-          .whenData((vinculados) {
+      ref.watch(mediunsVinculadosProvider(widget.entidade!.id)).whenData((
+        vinculados,
+      ) {
         if (!_vinculosCarregados) {
           final ids = vinculados.map((m) => m.id).toSet();
           setState(() {
@@ -123,30 +124,29 @@ class _EntidadeFormScreenState extends ConsumerState<EntidadeFormScreen> {
               ),
               const SizedBox(height: 8),
               mediunsState.when(
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
-                error: (e, _) =>
-                    Text('Erro ao carregar médiuns: $e'),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, _) => Text('Erro ao carregar médiuns: $e'),
                 data: (mediuns) => mediuns.isEmpty
                     ? const Text('Nenhum médium ativo cadastrado.')
                     : Column(
                         key: const Key('mediuns_list'),
                         children: mediuns
-                            .map((medium) => CheckboxListTile(
-                                  key: Key('medium_check_${medium.id}'),
-                                  title: Text(medium.nome),
-                                  value: _mediunsSelecionados
-                                      .contains(medium.id),
-                                  onChanged: (selected) {
-                                    setState(() {
-                                      if (selected == true) {
-                                        _mediunsSelecionados.add(medium.id);
-                                      } else {
-                                        _mediunsSelecionados.remove(medium.id);
-                                      }
-                                    });
-                                  },
-                                ))
+                            .map(
+                              (medium) => CheckboxListTile(
+                                key: Key('medium_check_${medium.id}'),
+                                title: Text(medium.nome),
+                                value: _mediunsSelecionados.contains(medium.id),
+                                onChanged: (selected) {
+                                  setState(() {
+                                    if (selected == true) {
+                                      _mediunsSelecionados.add(medium.id);
+                                    } else {
+                                      _mediunsSelecionados.remove(medium.id);
+                                    }
+                                  });
+                                },
+                              ),
+                            )
                             .toList(),
                       ),
               ),

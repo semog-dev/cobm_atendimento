@@ -48,10 +48,7 @@ class AuthNotifier extends Notifier<Usuario?> {
     }
   }
 
-  Future<void> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> login({required String email, required String password}) async {
     final response = await _repository.login(email: email, password: password);
     final userId = response.user!.id;
     final map = await _repository.buscarPerfil(userId);

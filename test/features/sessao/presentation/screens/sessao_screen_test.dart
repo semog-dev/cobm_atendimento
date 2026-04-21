@@ -29,21 +29,18 @@ void main() {
       ],
     );
     return ProviderScope(
-      overrides: [
-        sessaoRepositoryProvider.overrideWithValue(mockRepository),
-      ],
-      child: MaterialApp.router(
-        theme: AppTheme.light,
-        routerConfig: router,
-      ),
+      overrides: [sessaoRepositoryProvider.overrideWithValue(mockRepository)],
+      child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
     );
   }
 
   group('SessaoScreen', () {
-    testWidgets('deve exibir mensagem quando não há sessão aberta',
-        (tester) async {
-      when(() => mockRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => null);
+    testWidgets('deve exibir mensagem quando não há sessão aberta', (
+      tester,
+    ) async {
+      when(
+        () => mockRepository.buscarSessaoAberta(),
+      ).thenAnswer((_) async => null);
       when(() => mockRepository.listar()).thenAnswer((_) async => []);
 
       await tester.pumpWidget(buildWidget());
@@ -52,10 +49,12 @@ void main() {
       expect(find.text('Nenhuma sessão aberta'), findsOneWidget);
     });
 
-    testWidgets('deve exibir botão de abrir sessão quando não há sessão',
-        (tester) async {
-      when(() => mockRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => null);
+    testWidgets('deve exibir botão de abrir sessão quando não há sessão', (
+      tester,
+    ) async {
+      when(
+        () => mockRepository.buscarSessaoAberta(),
+      ).thenAnswer((_) async => null);
       when(() => mockRepository.listar()).thenAnswer((_) async => []);
 
       await tester.pumpWidget(buildWidget());
@@ -64,12 +63,15 @@ void main() {
       expect(find.byKey(const Key('btn_abrir_sessao')), findsOneWidget);
     });
 
-    testWidgets('deve exibir botão de encerrar quando há sessão aberta',
-        (tester) async {
-      when(() => mockRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => sessaoFake);
-      when(() => mockRepository.listarMediumEntidadesDaSessao(any()))
-          .thenAnswer((_) async => [mediumEntidadeFake]);
+    testWidgets('deve exibir botão de encerrar quando há sessão aberta', (
+      tester,
+    ) async {
+      when(
+        () => mockRepository.buscarSessaoAberta(),
+      ).thenAnswer((_) async => sessaoFake);
+      when(
+        () => mockRepository.listarMediumEntidadesDaSessao(any()),
+      ).thenAnswer((_) async => [mediumEntidadeFake]);
       when(() => mockRepository.listar()).thenAnswer((_) async => []);
 
       await tester.pumpWidget(buildWidget());
@@ -78,12 +80,15 @@ void main() {
       expect(find.byKey(const Key('btn_encerrar_sessao')), findsOneWidget);
     });
 
-    testWidgets('deve exibir médiuns/entidades da sessão quando aberta',
-        (tester) async {
-      when(() => mockRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => sessaoFake);
-      when(() => mockRepository.listarMediumEntidadesDaSessao(any()))
-          .thenAnswer((_) async => [mediumEntidadeFake]);
+    testWidgets('deve exibir médiuns/entidades da sessão quando aberta', (
+      tester,
+    ) async {
+      when(
+        () => mockRepository.buscarSessaoAberta(),
+      ).thenAnswer((_) async => sessaoFake);
+      when(
+        () => mockRepository.listarMediumEntidadesDaSessao(any()),
+      ).thenAnswer((_) async => [mediumEntidadeFake]);
       when(() => mockRepository.listar()).thenAnswer((_) async => []);
 
       await tester.pumpWidget(buildWidget());
@@ -91,7 +96,8 @@ void main() {
 
       expect(
         find.text(
-            '${mediumEntidadeFake.entidadeNome} — ${mediumEntidadeFake.mediumNome}'),
+          '${mediumEntidadeFake.entidadeNome} — ${mediumEntidadeFake.mediumNome}',
+        ),
         findsOneWidget,
       );
     });
@@ -103,10 +109,12 @@ void main() {
         encerradaEm: DateTime(2024, 1, 1, 12, 0),
       );
 
-      when(() => mockRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => null);
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [sessaoEncerrada]);
+      when(
+        () => mockRepository.buscarSessaoAberta(),
+      ).thenAnswer((_) async => null);
+      when(
+        () => mockRepository.listar(),
+      ).thenAnswer((_) async => [sessaoEncerrada]);
 
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
@@ -114,24 +122,29 @@ void main() {
       expect(find.byKey(const Key('historico_sessoes')), findsOneWidget);
     });
 
-    testWidgets('deve exibir card da sessão encerrada no histórico',
-        (tester) async {
+    testWidgets('deve exibir card da sessão encerrada no histórico', (
+      tester,
+    ) async {
       final sessaoEncerrada = sessaoFake.copyWith(
         id: 'uuid-sess-002',
         status: StatusSessao.encerrada,
         encerradaEm: DateTime(2024, 1, 1, 12, 0),
       );
 
-      when(() => mockRepository.buscarSessaoAberta())
-          .thenAnswer((_) async => null);
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [sessaoEncerrada]);
+      when(
+        () => mockRepository.buscarSessaoAberta(),
+      ).thenAnswer((_) async => null);
+      when(
+        () => mockRepository.listar(),
+      ).thenAnswer((_) async => [sessaoEncerrada]);
 
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
-      expect(find.byKey(Key('sessao_card_${sessaoEncerrada.id}')),
-          findsOneWidget);
+      expect(
+        find.byKey(Key('sessao_card_${sessaoEncerrada.id}')),
+        findsOneWidget,
+      );
     });
   });
 }

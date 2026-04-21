@@ -22,11 +22,7 @@ class EntidadesRepository {
   }
 
   Future<Entidade> buscarPorId(String id) async {
-    final data = await _client
-        .from('entidades')
-        .select()
-        .eq('id', id)
-        .single();
+    final data = await _client.from('entidades').select().eq('id', id).single();
     return Entidade.fromMap(data);
   }
 

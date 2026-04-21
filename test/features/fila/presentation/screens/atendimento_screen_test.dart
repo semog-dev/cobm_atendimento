@@ -44,19 +44,15 @@ void main() {
       ],
     );
     return ProviderScope(
-      overrides: [
-        filaRepositoryProvider.overrideWithValue(mockFilaRepository),
-      ],
-      child: MaterialApp.router(
-        theme: AppTheme.light,
-        routerConfig: router,
-      ),
+      overrides: [filaRepositoryProvider.overrideWithValue(mockFilaRepository)],
+      child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
     );
   }
 
   group('AtendimentoScreen', () {
-    testWidgets('should mostrar tela de atendimento com cronômetro',
-        (tester) async {
+    testWidgets('should mostrar tela de atendimento com cronômetro', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildWidget());
       await tester.pump();
 
@@ -64,15 +60,17 @@ void main() {
       expect(find.text('Atendimento em curso'), findsOneWidget);
     });
 
-    testWidgets('should encerrar atendimento ao pressionar btn_encerrar',
-        (tester) async {
+    testWidgets('should encerrar atendimento ao pressionar btn_encerrar', (
+      tester,
+    ) async {
       final encerrada = entradaEmAtendimento.copyWith(
         status: StatusFila.concluido,
         encerradoEm: DateTime(2024, 1, 1, 9, 30),
         duracaoSegundos: 1500,
       );
-      when(() => mockFilaRepository.encerrarAtendimento(any()))
-          .thenAnswer((_) async => encerrada);
+      when(
+        () => mockFilaRepository.encerrarAtendimento(any()),
+      ).thenAnswer((_) async => encerrada);
 
       await tester.pumpWidget(buildWidget());
       await tester.pump();
@@ -80,20 +78,22 @@ void main() {
       await tester.tap(find.byKey(const Key('btn_encerrar_atendimento')));
       await tester.pumpAndSettle();
 
-      verify(() =>
-              mockFilaRepository.encerrarAtendimento(entradaEmAtendimento.id))
-          .called(1);
+      verify(
+        () => mockFilaRepository.encerrarAtendimento(entradaEmAtendimento.id),
+      ).called(1);
     });
 
-    testWidgets('should navegar para tela de fila após encerrar atendimento',
-        (tester) async {
+    testWidgets('should navegar para tela de fila após encerrar atendimento', (
+      tester,
+    ) async {
       final encerrada = entradaEmAtendimento.copyWith(
         status: StatusFila.concluido,
         encerradoEm: DateTime(2024, 1, 1, 9, 30),
         duracaoSegundos: 1500,
       );
-      when(() => mockFilaRepository.encerrarAtendimento(any()))
-          .thenAnswer((_) async => encerrada);
+      when(
+        () => mockFilaRepository.encerrarAtendimento(any()),
+      ).thenAnswer((_) async => encerrada);
 
       await tester.pumpWidget(buildWidget());
       await tester.pump();

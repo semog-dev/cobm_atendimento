@@ -27,9 +27,7 @@ Widget _buildWidget(MockMediunsRepository mockRepository, {Medium? medium}) {
   );
 
   return ProviderScope(
-    overrides: [
-      mediunsRepositoryProvider.overrideWithValue(mockRepository),
-    ],
+    overrides: [mediunsRepositoryProvider.overrideWithValue(mockRepository)],
     child: MaterialApp.router(routerConfig: router),
   );
 }
@@ -79,31 +77,37 @@ void main() {
     });
 
     testWidgets(
-        'deve chamar criar quando formulário é válido sem médium existente',
-        (tester) async {
-      when(() => mockRepository.criar(
+      'deve chamar criar quando formulário é válido sem médium existente',
+      (tester) async {
+        when(
+          () => mockRepository.criar(
             nome: any(named: 'nome'),
             fotoUrl: any(named: 'fotoUrl'),
-          )).thenAnswer((_) async => mediumFake);
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [mediumFake]);
+          ),
+        ).thenAnswer((_) async => mediumFake);
+        when(
+          () => mockRepository.listar(),
+        ).thenAnswer((_) async => [mediumFake]);
 
-      await tester.pumpWidget(_buildWidget(mockRepository));
-      await tester.pump();
+        await tester.pumpWidget(_buildWidget(mockRepository));
+        await tester.pump();
 
-      await tester.enterText(
-          find.byKey(const Key('nome_field')), 'José da Silva');
-      await tester.tap(find.byKey(const Key('btn_salvar')));
-      await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('nome_field')),
+          'José da Silva',
+        );
+        await tester.tap(find.byKey(const Key('btn_salvar')));
+        await tester.pumpAndSettle();
 
-      verify(() => mockRepository.criar(
-            nome: 'José da Silva',
-            fotoUrl: null,
-          )).called(1);
-    });
+        verify(
+          () => mockRepository.criar(nome: 'José da Silva', fotoUrl: null),
+        ).called(1);
+      },
+    );
 
-    testWidgets('deve preencher campos quando médium existente é passado',
-        (tester) async {
+    testWidgets('deve preencher campos quando médium existente é passado', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildWidget(mockRepository, medium: mediumFake));
       await tester.pump();
 
@@ -117,29 +121,35 @@ void main() {
     });
 
     testWidgets(
-        'deve chamar atualizar quando formulário é válido com médium existente',
-        (tester) async {
-      when(() => mockRepository.salvar(any())).thenAnswer((_) async {});
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [mediumFake]);
+      'deve chamar atualizar quando formulário é válido com médium existente',
+      (tester) async {
+        when(() => mockRepository.salvar(any())).thenAnswer((_) async {});
+        when(
+          () => mockRepository.listar(),
+        ).thenAnswer((_) async => [mediumFake]);
 
-      await tester.pumpWidget(_buildWidget(mockRepository, medium: mediumFake));
-      await tester.pump();
+        await tester.pumpWidget(
+          _buildWidget(mockRepository, medium: mediumFake),
+        );
+        await tester.pump();
 
-      await tester.tap(find.byKey(const Key('btn_salvar')));
-      await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('btn_salvar')));
+        await tester.pumpAndSettle();
 
-      verify(() => mockRepository.salvar(any())).called(1);
-    });
+        verify(() => mockRepository.salvar(any())).called(1);
+      },
+    );
 
-    testWidgets('deve voltar para tela anterior após criar com sucesso',
-        (tester) async {
-      when(() => mockRepository.criar(
-            nome: any(named: 'nome'),
-            fotoUrl: any(named: 'fotoUrl'),
-          )).thenAnswer((_) async => mediumFake);
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [mediumFake]);
+    testWidgets('deve voltar para tela anterior após criar com sucesso', (
+      tester,
+    ) async {
+      when(
+        () => mockRepository.criar(
+          nome: any(named: 'nome'),
+          fotoUrl: any(named: 'fotoUrl'),
+        ),
+      ).thenAnswer((_) async => mediumFake);
+      when(() => mockRepository.listar()).thenAnswer((_) async => [mediumFake]);
 
       final router = GoRouter(
         initialLocation: '/lista/novo',
@@ -157,16 +167,20 @@ void main() {
           ),
         ],
       );
-      await tester.pumpWidget(ProviderScope(
-        overrides: [
-          mediunsRepositoryProvider.overrideWithValue(mockRepository),
-        ],
-        child: MaterialApp.router(routerConfig: router),
-      ));
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            mediunsRepositoryProvider.overrideWithValue(mockRepository),
+          ],
+          child: MaterialApp.router(routerConfig: router),
+        ),
+      );
       await tester.pump();
 
       await tester.enterText(
-          find.byKey(const Key('nome_field')), 'José da Silva');
+        find.byKey(const Key('nome_field')),
+        'José da Silva',
+      );
       await tester.tap(find.byKey(const Key('btn_salvar')));
       await tester.pumpAndSettle();
 

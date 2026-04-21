@@ -68,94 +68,104 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state, navigationShell) =>
             GestorShell(navigationShell: navigationShell),
         branches: [
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: '/gestor/mediuns',
-              name: 'mediuns',
-              builder: (context, state) => const MediunsScreen(),
-              routes: [
-                GoRoute(
-                  path: 'novo',
-                  name: 'medium-novo',
-                  builder: (context, state) => const MediumFormScreen(),
-                ),
-                GoRoute(
-                  path: ':id',
-                  name: 'medium-editar',
-                  builder: (context, state) =>
-                      MediumFormScreen(medium: state.extra as Medium?),
-                ),
-              ],
-            ),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: '/gestor/entidades',
-              name: 'entidades',
-              builder: (context, state) => const EntidadesScreen(),
-              routes: [
-                GoRoute(
-                  path: 'nova',
-                  name: 'entidade-nova',
-                  builder: (context, state) => const EntidadeFormScreen(),
-                ),
-                GoRoute(
-                  path: ':id',
-                  name: 'entidade-editar',
-                  builder: (context, state) =>
-                      EntidadeFormScreen(entidade: state.extra as Entidade?),
-                ),
-              ],
-            ),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: '/gestor/sessao',
-              name: 'sessao',
-              builder: (context, state) => const SessaoScreen(),
-              routes: [
-                GoRoute(
-                  path: 'abrir',
-                  name: 'sessao-abrir',
-                  builder: (context, state) => const AbrirSessaoScreen(),
-                ),
-              ],
-            ),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: '/gestor/fila',
-              name: 'fila',
-              builder: (context, state) => const FilaScreen(),
-              routes: [
-                GoRoute(
-                  path: 'detalhe',
-                  name: 'fila-detalhe',
-                  builder: (context, state) => FilaDetalheScreen(
-                    mediumEntidade: state.extra as MediumEntidade,
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/gestor/mediuns',
+                name: 'mediuns',
+                builder: (context, state) => const MediunsScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'novo',
+                    name: 'medium-novo',
+                    builder: (context, state) => const MediumFormScreen(),
                   ),
-                ),
-                GoRoute(
-                  path: 'registrar-cliente',
-                  name: 'fila-registrar-cliente',
-                  builder: (context, state) {
-                    final extra = state.extra as Map<String, dynamic>;
-                    return RegistrarClienteScreen(
-                      sessaoId: extra['sessaoId'] as String,
-                      mediumEntidade: extra['me'] as MediumEntidade,
-                    );
-                  },
-                ),
-              ],
-            ),
-          ]),
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: '/gestor/perfil',
-              name: 'perfil',
-              builder: (context, state) => const ProfileScreen(),
-            ),
-          ]),
+                  GoRoute(
+                    path: ':id',
+                    name: 'medium-editar',
+                    builder: (context, state) =>
+                        MediumFormScreen(medium: state.extra as Medium?),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/gestor/entidades',
+                name: 'entidades',
+                builder: (context, state) => const EntidadesScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'nova',
+                    name: 'entidade-nova',
+                    builder: (context, state) => const EntidadeFormScreen(),
+                  ),
+                  GoRoute(
+                    path: ':id',
+                    name: 'entidade-editar',
+                    builder: (context, state) =>
+                        EntidadeFormScreen(entidade: state.extra as Entidade?),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/gestor/sessao',
+                name: 'sessao',
+                builder: (context, state) => const SessaoScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'abrir',
+                    name: 'sessao-abrir',
+                    builder: (context, state) => const AbrirSessaoScreen(),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/gestor/fila',
+                name: 'fila',
+                builder: (context, state) => const FilaScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'detalhe',
+                    name: 'fila-detalhe',
+                    builder: (context, state) => FilaDetalheScreen(
+                      mediumEntidade: state.extra as MediumEntidade,
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'registrar-cliente',
+                    name: 'fila-registrar-cliente',
+                    builder: (context, state) {
+                      final extra = state.extra as Map<String, dynamic>;
+                      return RegistrarClienteScreen(
+                        sessaoId: extra['sessaoId'] as String,
+                        mediumEntidade: extra['me'] as MediumEntidade,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/gestor/perfil',
+                name: 'perfil',
+                builder: (context, state) => const ProfileScreen(),
+              ),
+            ],
+          ),
         ],
       ),
     ],

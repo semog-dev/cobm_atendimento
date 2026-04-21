@@ -19,25 +19,26 @@ void main() {
   setUp(() {
     mockRepository = MockMediunsRepository();
     container = ProviderContainer(
-      overrides: [
-        mediunsRepositoryProvider.overrideWithValue(mockRepository),
-      ],
+      overrides: [mediunsRepositoryProvider.overrideWithValue(mockRepository)],
     );
   });
 
   tearDown(() => container.dispose());
 
   group('mediunsProvider', () {
-    test('deve retornar lista de médiuns quando repositório retorna com sucesso',
-        () async {
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [mediumFake]);
+    test(
+      'deve retornar lista de médiuns quando repositório retorna com sucesso',
+      () async {
+        when(
+          () => mockRepository.listar(),
+        ).thenAnswer((_) async => [mediumFake]);
 
-      final result = await container.read(mediunsProvider.future);
+        final result = await container.read(mediunsProvider.future);
 
-      expect(result, [mediumFake]);
-      expect(result.length, 1);
-    });
+        expect(result, [mediumFake]);
+        expect(result.length, 1);
+      },
+    );
 
     test('deve retornar lista vazia quando não há médiuns', () async {
       when(() => mockRepository.listar()).thenAnswer((_) async => []);
@@ -48,8 +49,9 @@ void main() {
     });
 
     test('deve lançar exceção quando repositório falha', () async {
-      when(() => mockRepository.listar())
-          .thenThrow(Exception('Erro de conexão'));
+      when(
+        () => mockRepository.listar(),
+      ).thenThrow(Exception('Erro de conexão'));
 
       expect(
         () => container.read(mediunsProvider.future),
@@ -61,8 +63,9 @@ void main() {
   group('mediunsAtivosProvider', () {
     test('deve retornar apenas médiuns ativos', () async {
       final mediumInativo = mediumFake.copyWith(ativo: false);
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [mediumFake, mediumInativo]);
+      when(
+        () => mockRepository.listar(),
+      ).thenAnswer((_) async => [mediumFake, mediumInativo]);
 
       final result = await container.read(mediunsAtivosProvider.future);
 
@@ -73,8 +76,7 @@ void main() {
 
   group('MediunsGestorNotifier', () {
     test('deve carregar lista de médiuns ao inicializar', () async {
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [mediumFake]);
+      when(() => mockRepository.listar()).thenAnswer((_) async => [mediumFake]);
 
       final result = await container.read(mediunsGestorProvider.future);
 
@@ -82,28 +84,27 @@ void main() {
     });
 
     test('deve criar médium e recarregar lista', () async {
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [mediumFake]);
-      when(() => mockRepository.criar(
-            nome: any(named: 'nome'),
-            fotoUrl: any(named: 'fotoUrl'),
-          )).thenAnswer((_) async => mediumFake);
+      when(() => mockRepository.listar()).thenAnswer((_) async => [mediumFake]);
+      when(
+        () => mockRepository.criar(
+          nome: any(named: 'nome'),
+          fotoUrl: any(named: 'fotoUrl'),
+        ),
+      ).thenAnswer((_) async => mediumFake);
 
       await container.read(mediunsGestorProvider.future);
       await container
           .read(mediunsGestorProvider.notifier)
           .criar(nome: 'José da Silva', fotoUrl: null);
 
-      verify(() => mockRepository.criar(
-            nome: 'José da Silva',
-            fotoUrl: null,
-          )).called(1);
+      verify(
+        () => mockRepository.criar(nome: 'José da Silva', fotoUrl: null),
+      ).called(1);
       verify(() => mockRepository.listar()).called(greaterThanOrEqualTo(2));
     });
 
     test('deve atualizar médium e recarregar lista', () async {
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [mediumFake]);
+      when(() => mockRepository.listar()).thenAnswer((_) async => [mediumFake]);
       when(() => mockRepository.salvar(any())).thenAnswer((_) async {});
 
       await container.read(mediunsGestorProvider.future);
@@ -115,8 +116,7 @@ void main() {
     });
 
     test('deve desativar médium ativo ao alternar', () async {
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [mediumFake]);
+      when(() => mockRepository.listar()).thenAnswer((_) async => [mediumFake]);
       when(() => mockRepository.desativar(any())).thenAnswer((_) async {});
 
       await container.read(mediunsGestorProvider.future);
@@ -129,8 +129,9 @@ void main() {
 
     test('deve ativar médium inativo ao alternar', () async {
       final mediumInativo = mediumFake.copyWith(ativo: false);
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [mediumInativo]);
+      when(
+        () => mockRepository.listar(),
+      ).thenAnswer((_) async => [mediumInativo]);
       when(() => mockRepository.ativar(any())).thenAnswer((_) async {});
 
       await container.read(mediunsGestorProvider.future);
@@ -142,8 +143,9 @@ void main() {
     });
 
     test('should expor AsyncError when repositório falha no build', () async {
-      when(() => mockRepository.listar())
-          .thenThrow(Exception('Erro de conexão'));
+      when(
+        () => mockRepository.listar(),
+      ).thenThrow(Exception('Erro de conexão'));
 
       await expectLater(
         container.read(mediunsGestorProvider.future),
@@ -156,25 +158,25 @@ void main() {
 
     test('should propagar exceção when criar falha', () async {
       when(() => mockRepository.listar()).thenAnswer((_) async => []);
-      when(() => mockRepository.criar(
-            nome: any(named: 'nome'),
-            fotoUrl: any(named: 'fotoUrl'),
-          )).thenThrow(Exception('DB error'));
+      when(
+        () => mockRepository.criar(
+          nome: any(named: 'nome'),
+          fotoUrl: any(named: 'fotoUrl'),
+        ),
+      ).thenThrow(Exception('DB error'));
 
       await container.read(mediunsGestorProvider.future);
 
       expect(
-        () => container
-            .read(mediunsGestorProvider.notifier)
-            .criar(nome: 'José'),
+        () =>
+            container.read(mediunsGestorProvider.notifier).criar(nome: 'José'),
         throwsA(isA<Exception>()),
       );
     });
 
     test('should propagar exceção when atualizar falha', () async {
       when(() => mockRepository.listar()).thenAnswer((_) async => []);
-      when(() => mockRepository.salvar(any()))
-          .thenThrow(Exception('DB error'));
+      when(() => mockRepository.salvar(any())).thenThrow(Exception('DB error'));
 
       await container.read(mediunsGestorProvider.future);
 
@@ -188,8 +190,9 @@ void main() {
 
     test('should propagar exceção when alternarAtivo falha', () async {
       when(() => mockRepository.listar()).thenAnswer((_) async => []);
-      when(() => mockRepository.desativar(any()))
-          .thenThrow(Exception('DB error'));
+      when(
+        () => mockRepository.desativar(any()),
+      ).thenThrow(Exception('DB error'));
 
       await container.read(mediunsGestorProvider.future);
 

@@ -8,8 +8,9 @@ final filaRepositoryProvider = Provider<FilaRepository>((ref) {
   return FilaRepository(client: supabase);
 });
 
-final filaNotifierProvider =
-    NotifierProvider<FilaNotifier, List<EntradaFila>>(FilaNotifier.new);
+final filaNotifierProvider = NotifierProvider<FilaNotifier, List<EntradaFila>>(
+  FilaNotifier.new,
+);
 
 class FilaNotifier extends Notifier<List<EntradaFila>> {
   FilaRepository get _repository => ref.read(filaRepositoryProvider);

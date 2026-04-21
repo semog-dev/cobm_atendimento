@@ -11,9 +11,7 @@ class MockAuthRepository extends Mock implements AuthRepository {}
 
 Widget _buildWidget(MockAuthRepository mockRepository) {
   return ProviderScope(
-    overrides: [
-      authRepositoryProvider.overrideWithValue(mockRepository),
-    ],
+    overrides: [authRepositoryProvider.overrideWithValue(mockRepository)],
     child: const MaterialApp(home: CadastroScreen()),
   );
 }
@@ -27,8 +25,9 @@ void main() {
   });
 
   group('CadastroScreen', () {
-    testWidgets('deve exibir campos de nome, telefone, email e senha',
-        (tester) async {
+    testWidgets('deve exibir campos de nome, telefone, email e senha', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildWidget(mockRepository));
 
       expect(find.byKey(const Key('nome_field')), findsOneWidget);
@@ -73,7 +72,9 @@ void main() {
 
       await tester.enterText(find.byKey(const Key('nome_field')), 'João');
       await tester.enterText(
-          find.byKey(const Key('telefone_field')), '11999999999');
+        find.byKey(const Key('telefone_field')),
+        '11999999999',
+      );
       await tester.tap(find.byKey(const Key('btn_cadastrar')));
       await tester.pump();
 
@@ -85,37 +86,50 @@ void main() {
 
       await tester.enterText(find.byKey(const Key('nome_field')), 'João');
       await tester.enterText(
-          find.byKey(const Key('telefone_field')), '11999999999');
+        find.byKey(const Key('telefone_field')),
+        '11999999999',
+      );
       await tester.enterText(
-          find.byKey(const Key('email_field')), 'joao@email.com');
+        find.byKey(const Key('email_field')),
+        'joao@email.com',
+      );
       await tester.tap(find.byKey(const Key('btn_cadastrar')));
       await tester.pump();
 
       expect(find.text('Informe a senha'), findsOneWidget);
     });
 
-    testWidgets('deve chamar cadastrar quando formulário é válido',
-        (tester) async {
-      when(() => mockRepository.cadastrar(
-            email: any(named: 'email'),
-            password: any(named: 'password'),
-          )).thenThrow(Exception('erro simulado'));
+    testWidgets('deve chamar cadastrar quando formulário é válido', (
+      tester,
+    ) async {
+      when(
+        () => mockRepository.cadastrar(
+          email: any(named: 'email'),
+          password: any(named: 'password'),
+        ),
+      ).thenThrow(Exception('erro simulado'));
 
       await tester.pumpWidget(_buildWidget(mockRepository));
 
       await tester.enterText(find.byKey(const Key('nome_field')), 'João');
       await tester.enterText(
-          find.byKey(const Key('telefone_field')), '11999999999');
+        find.byKey(const Key('telefone_field')),
+        '11999999999',
+      );
       await tester.enterText(
-          find.byKey(const Key('email_field')), 'joao@email.com');
+        find.byKey(const Key('email_field')),
+        'joao@email.com',
+      );
       await tester.enterText(find.byKey(const Key('senha_field')), '123456');
       await tester.tap(find.byKey(const Key('btn_cadastrar')));
       await tester.pump();
 
-      verify(() => mockRepository.cadastrar(
-            email: 'joao@email.com',
-            password: '123456',
-          )).called(1);
+      verify(
+        () => mockRepository.cadastrar(
+          email: 'joao@email.com',
+          password: '123456',
+        ),
+      ).called(1);
     });
   });
 }

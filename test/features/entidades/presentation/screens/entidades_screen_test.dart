@@ -22,34 +22,36 @@ void main() {
       overrides: [
         entidadesRepositoryProvider.overrideWithValue(mockRepository),
       ],
-      child: MaterialApp(
-        theme: AppTheme.light,
-        home: const EntidadesScreen(),
-      ),
+      child: MaterialApp(theme: AppTheme.light, home: const EntidadesScreen()),
     );
   }
 
   group('EntidadesScreen', () {
-    testWidgets('deve exibir indicador de carregamento enquanto carrega',
-        (tester) async {
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [entidadeFake]);
+    testWidgets('deve exibir indicador de carregamento enquanto carrega', (
+      tester,
+    ) async {
+      when(
+        () => mockRepository.listar(),
+      ).thenAnswer((_) async => [entidadeFake]);
 
       await tester.pumpWidget(buildWidget());
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('deve exibir lista de entidades quando carregamento é concluído',
-        (tester) async {
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [entidadeFake]);
+    testWidgets(
+      'deve exibir lista de entidades quando carregamento é concluído',
+      (tester) async {
+        when(
+          () => mockRepository.listar(),
+        ).thenAnswer((_) async => [entidadeFake]);
 
-      await tester.pumpWidget(buildWidget());
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildWidget());
+        await tester.pumpAndSettle();
 
-      expect(find.text(entidadeFake.nome), findsOneWidget);
-    });
+        expect(find.text(entidadeFake.nome), findsOneWidget);
+      },
+    );
 
     testWidgets('deve exibir FAB para adicionar entidade', (tester) async {
       when(() => mockRepository.listar()).thenAnswer((_) async => []);
@@ -60,10 +62,12 @@ void main() {
       expect(find.byKey(const Key('fab_nova_entidade')), findsOneWidget);
     });
 
-    testWidgets('deve exibir switch de ativa para cada entidade',
-        (tester) async {
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [entidadeFake]);
+    testWidgets('deve exibir switch de ativa para cada entidade', (
+      tester,
+    ) async {
+      when(
+        () => mockRepository.listar(),
+      ).thenAnswer((_) async => [entidadeFake]);
 
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();

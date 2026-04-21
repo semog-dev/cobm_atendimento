@@ -37,7 +37,9 @@ class _CadastroScreenState extends ConsumerState<CadastroScreen> {
     });
 
     try {
-      await ref.read(authProvider.notifier).cadastrar(
+      await ref
+          .read(authProvider.notifier)
+          .cadastrar(
             nome: _nomeController.text.trim(),
             telefone: _telefoneController.text.trim(),
             email: _emailController.text.trim(),

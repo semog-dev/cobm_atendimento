@@ -15,10 +15,9 @@ class FilaDetalheScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final sessaoState = ref.watch(sessaoNotifierProvider);
     final fila = ref.watch(filaNotifierProvider);
-    final entradas = fila
-        .where((e) => e.mediumEntidadeId == mediumEntidade.id)
-        .toList()
-      ..sort((a, b) => a.posicao.compareTo(b.posicao));
+    final entradas =
+        fila.where((e) => e.mediumEntidadeId == mediumEntidade.id).toList()
+          ..sort((a, b) => a.posicao.compareTo(b.posicao));
     final aguardando = entradas.where((e) => e.isAguardando).toList()
       ..sort((a, b) => a.posicao.compareTo(b.posicao));
 
@@ -39,9 +38,10 @@ class FilaDetalheScreen extends ConsumerWidget {
             Text(
               mediumEntidade.mediumNome,
               style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400),
+                color: Colors.white70,
+                fontSize: 12,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ],
         ),
@@ -50,9 +50,7 @@ class FilaDetalheScreen extends ConsumerWidget {
         onRefresh: () async {
           ref.invalidate(sessaoNotifierProvider);
           if (sessaoId != null) {
-            ref
-                .read(filaNotifierProvider.notifier)
-                .assinarSessao(sessaoId);
+            ref.read(filaNotifierProvider.notifier).assinarSessao(sessaoId);
           }
         },
         child: entradas.isEmpty
@@ -65,16 +63,18 @@ class FilaDetalheScreen extends ConsumerWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.people_outline,
-                              size: 64,
-                              color:
-                                  colorScheme.onSurface.withValues(alpha: 0.2)),
+                          Icon(
+                            Icons.people_outline,
+                            size: 64,
+                            color: colorScheme.onSurface.withValues(alpha: 0.2),
+                          ),
                           const SizedBox(height: 12),
                           Text(
                             'Nenhuma entrada nesta fila',
                             style: TextStyle(
-                              color:
-                                  colorScheme.onSurface.withValues(alpha: 0.4),
+                              color: colorScheme.onSurface.withValues(
+                                alpha: 0.4,
+                              ),
                             ),
                           ),
                         ],
@@ -182,8 +182,8 @@ class _EntradaFilaCard extends ConsumerWidget {
                   Text(
                     entrada.clienteNome,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   _StatusBadge(status: entrada.status),
@@ -199,8 +199,10 @@ class _EntradaFilaCard extends ConsumerWidget {
                 label: const Text('Ver'),
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.green.shade700,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                 ),
               ),
           ],

@@ -18,8 +18,8 @@ final mediunsAtivosProvider = FutureProvider<List<Medium>>((ref) async {
 
 final mediunsGestorProvider =
     AsyncNotifierProvider<MediunsGestorNotifier, List<Medium>>(
-  MediunsGestorNotifier.new,
-);
+      MediunsGestorNotifier.new,
+    );
 
 class MediunsGestorNotifier extends AsyncNotifier<List<Medium>> {
   MediunsRepository get _repository => ref.read(mediunsRepositoryProvider);

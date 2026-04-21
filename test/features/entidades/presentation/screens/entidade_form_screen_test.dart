@@ -13,6 +13,7 @@ import 'package:cobm_atendimento/core/theme/app_theme.dart';
 import '../../../../core/helpers/test_helpers.dart';
 
 class MockEntidadesRepository extends Mock implements EntidadesRepository {}
+
 class MockMediunsRepository extends Mock implements MediunsRepository {}
 
 void main() {
@@ -27,8 +28,7 @@ void main() {
   setUp(() {
     mockEntidadesRepo = MockEntidadesRepository();
     mockMediunsRepo = MockMediunsRepository();
-    when(() => mockMediunsRepo.listar())
-        .thenAnswer((_) async => [mediumFake]);
+    when(() => mockMediunsRepo.listar()).thenAnswer((_) async => [mediumFake]);
   });
 
   Widget buildWidget({Entidade? entidade}) {
@@ -52,10 +52,7 @@ void main() {
         entidadesRepositoryProvider.overrideWithValue(mockEntidadesRepo),
         mediunsRepositoryProvider.overrideWithValue(mockMediunsRepo),
       ],
-      child: MaterialApp.router(
-        theme: AppTheme.light,
-        routerConfig: router,
-      ),
+      child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
     );
   }
 
@@ -85,47 +82,61 @@ void main() {
       expect(find.text('Informe o nome'), findsOneWidget);
     });
 
-    testWidgets('deve chamar criar quando formulário é válido sem entidade existente',
-        (tester) async {
-      when(() => mockEntidadesRepo.listar())
-          .thenAnswer((_) async => [entidadeFake]);
-      when(() => mockEntidadesRepo.criar(
+    testWidgets(
+      'deve chamar criar quando formulário é válido sem entidade existente',
+      (tester) async {
+        when(
+          () => mockEntidadesRepo.listar(),
+        ).thenAnswer((_) async => [entidadeFake]);
+        when(
+          () => mockEntidadesRepo.criar(
             nome: any(named: 'nome'),
             descricao: any(named: 'descricao'),
-          )).thenAnswer((_) async => entidadeFake);
+          ),
+        ).thenAnswer((_) async => entidadeFake);
 
-      await tester.pumpWidget(buildWidget());
-      await tester.pumpAndSettle();
-      await tester.enterText(find.byKey(const Key('nome_field')), 'Exu');
-      await tester.tap(find.byKey(const Key('btn_salvar')));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildWidget());
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byKey(const Key('nome_field')), 'Exu');
+        await tester.tap(find.byKey(const Key('btn_salvar')));
+        await tester.pumpAndSettle();
 
-      verify(() => mockEntidadesRepo.criar(
+        verify(
+          () => mockEntidadesRepo.criar(
             nome: 'Exu',
             descricao: any(named: 'descricao'),
-          )).called(1);
-    });
+          ),
+        ).called(1);
+      },
+    );
 
-    testWidgets('deve chamar atualizar quando formulário é válido com entidade existente',
-        (tester) async {
-      when(() => mockEntidadesRepo.listar())
-          .thenAnswer((_) async => [entidadeFake]);
-      when(() => mockEntidadesRepo.salvar(any())).thenAnswer((_) async {});
-      when(() => mockEntidadesRepo.listarMediuns(any()))
-          .thenAnswer((_) async => []);
+    testWidgets(
+      'deve chamar atualizar quando formulário é válido com entidade existente',
+      (tester) async {
+        when(
+          () => mockEntidadesRepo.listar(),
+        ).thenAnswer((_) async => [entidadeFake]);
+        when(() => mockEntidadesRepo.salvar(any())).thenAnswer((_) async {});
+        when(
+          () => mockEntidadesRepo.listarMediuns(any()),
+        ).thenAnswer((_) async => []);
 
-      await tester.pumpWidget(buildWidget(entidade: entidadeFake));
-      await tester.pumpAndSettle();
-      await tester.enterText(
-          find.byKey(const Key('nome_field')), 'Exu Atualizado');
-      await tester.tap(find.byKey(const Key('btn_salvar')));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(buildWidget(entidade: entidadeFake));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('nome_field')),
+          'Exu Atualizado',
+        );
+        await tester.tap(find.byKey(const Key('btn_salvar')));
+        await tester.pumpAndSettle();
 
-      verify(() => mockEntidadesRepo.salvar(any())).called(1);
-    });
+        verify(() => mockEntidadesRepo.salvar(any())).called(1);
+      },
+    );
 
-    testWidgets('deve marcar médium como selecionado ao tocar no checkbox',
-        (tester) async {
+    testWidgets('deve marcar médium como selecionado ao tocar no checkbox', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildWidget());
       await tester.pumpAndSettle();
 
@@ -138,14 +149,18 @@ void main() {
       expect(checkbox.value, isTrue);
     });
 
-    testWidgets('deve voltar para tela anterior após criar com sucesso',
-        (tester) async {
-      when(() => mockEntidadesRepo.listar())
-          .thenAnswer((_) async => [entidadeFake]);
-      when(() => mockEntidadesRepo.criar(
-            nome: any(named: 'nome'),
-            descricao: any(named: 'descricao'),
-          )).thenAnswer((_) async => entidadeFake);
+    testWidgets('deve voltar para tela anterior após criar com sucesso', (
+      tester,
+    ) async {
+      when(
+        () => mockEntidadesRepo.listar(),
+      ).thenAnswer((_) async => [entidadeFake]);
+      when(
+        () => mockEntidadesRepo.criar(
+          nome: any(named: 'nome'),
+          descricao: any(named: 'descricao'),
+        ),
+      ).thenAnswer((_) async => entidadeFake);
 
       final router = GoRouter(
         initialLocation: '/lista/form',
@@ -163,16 +178,18 @@ void main() {
           ),
         ],
       );
-      await tester.pumpWidget(ProviderScope(
-        overrides: [
-          entidadesRepositoryProvider.overrideWithValue(mockEntidadesRepo),
-          mediunsRepositoryProvider.overrideWithValue(mockMediunsRepo),
-        ],
-        child: MaterialApp.router(
-          theme: AppTheme.light,
-          routerConfig: router,
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            entidadesRepositoryProvider.overrideWithValue(mockEntidadesRepo),
+            mediunsRepositoryProvider.overrideWithValue(mockMediunsRepo),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
         ),
-      ));
+      );
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byKey(const Key('nome_field')), 'Exu');

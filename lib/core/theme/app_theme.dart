@@ -23,8 +23,9 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
-      scaffoldBackgroundColor:
-          isDark ? const Color(0xFF0F0F0F) : const Color(0xFFF5F5F5),
+      scaffoldBackgroundColor: isDark
+          ? const Color(0xFF0F0F0F)
+          : const Color(0xFFF5F5F5),
 
       // AppBar
       appBarTheme: AppBarTheme(
@@ -82,8 +83,10 @@ class AppTheme {
           borderRadius: _borderRadius,
           borderSide: BorderSide(color: colorScheme.error, width: 1.5),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         prefixIconColor: isDark ? Colors.white54 : Colors.black38,
       ),
 
@@ -118,10 +121,7 @@ class AppTheme {
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: _red,
-          textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
         ),
       ),
 

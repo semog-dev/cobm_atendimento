@@ -27,9 +27,8 @@ Widget _buildWidget(MockMediunsRepository mockRepository) {
           ),
           GoRoute(
             path: ':id',
-            builder: (context, state) => MediumFormScreen(
-              medium: state.extra as Medium?,
-            ),
+            builder: (context, state) =>
+                MediumFormScreen(medium: state.extra as Medium?),
           ),
         ],
       ),
@@ -37,9 +36,7 @@ Widget _buildWidget(MockMediunsRepository mockRepository) {
   );
 
   return ProviderScope(
-    overrides: [
-      mediunsRepositoryProvider.overrideWithValue(mockRepository),
-    ],
+    overrides: [mediunsRepositoryProvider.overrideWithValue(mockRepository)],
     child: MaterialApp.router(routerConfig: router),
   );
 }
@@ -52,8 +49,9 @@ void main() {
   });
 
   group('MediunsScreen', () {
-    testWidgets('deve exibir indicador de carregamento enquanto carrega',
-        (tester) async {
+    testWidgets('deve exibir indicador de carregamento enquanto carrega', (
+      tester,
+    ) async {
       final completer = Completer<List<Medium>>();
       when(() => mockRepository.listar()).thenAnswer((_) => completer.future);
 
@@ -66,17 +64,20 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('deve exibir lista de médiuns quando carregamento é concluído',
-        (tester) async {
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [mediumFake]);
+    testWidgets(
+      'deve exibir lista de médiuns quando carregamento é concluído',
+      (tester) async {
+        when(
+          () => mockRepository.listar(),
+        ).thenAnswer((_) async => [mediumFake]);
 
-      await tester.pumpWidget(_buildWidget(mockRepository));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(_buildWidget(mockRepository));
+        await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('mediuns_list')), findsOneWidget);
-      expect(find.text('José da Silva'), findsOneWidget);
-    });
+        expect(find.byKey(const Key('mediuns_list')), findsOneWidget);
+        expect(find.text('José da Silva'), findsOneWidget);
+      },
+    );
 
     testWidgets('deve exibir mensagem quando não há médiuns', (tester) async {
       when(() => mockRepository.listar()).thenAnswer((_) async => []);
@@ -109,22 +110,18 @@ void main() {
     });
 
     testWidgets('deve exibir switch de ativo para cada médium', (tester) async {
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [mediumFake]);
+      when(() => mockRepository.listar()).thenAnswer((_) async => [mediumFake]);
 
       await tester.pumpWidget(_buildWidget(mockRepository));
       await tester.pumpAndSettle();
 
-      expect(
-        find.byKey(Key('switch_ativo_${mediumFake.id}')),
-        findsOneWidget,
-      );
+      expect(find.byKey(Key('switch_ativo_${mediumFake.id}')), findsOneWidget);
     });
 
-    testWidgets('deve navegar para formulário de edição ao tocar em editar',
-        (tester) async {
-      when(() => mockRepository.listar())
-          .thenAnswer((_) async => [mediumFake]);
+    testWidgets('deve navegar para formulário de edição ao tocar em editar', (
+      tester,
+    ) async {
+      when(() => mockRepository.listar()).thenAnswer((_) async => [mediumFake]);
 
       await tester.pumpWidget(_buildWidget(mockRepository));
       await tester.pumpAndSettle();

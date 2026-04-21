@@ -9,34 +9,38 @@ import 'package:cobm_atendimento/core/theme/app_theme.dart';
 class _GestorAuthNotifier extends AuthNotifier {
   @override
   Usuario? build() => Usuario(
-        id: 'gestor-1',
-        nome: 'Gestor',
-        telefone: '11999999999',
-        role: Role.gestor,
-        createdAt: DateTime(2024),
-      );
+    id: 'gestor-1',
+    nome: 'Gestor',
+    telefone: '11999999999',
+    role: Role.gestor,
+    createdAt: DateTime(2024),
+  );
 }
 
 Widget _buildApp() {
   return ProviderScope(
-    overrides: [
-      authProvider.overrideWith(() => _GestorAuthNotifier()),
-    ],
-    child: Builder(builder: (context) {
-      return Consumer(builder: (context, ref, _) {
-        final router = ref.watch(routerProvider);
-        return MaterialApp.router(
-          theme: AppTheme.light,
-          routerConfig: router,
+    overrides: [authProvider.overrideWith(() => _GestorAuthNotifier())],
+    child: Builder(
+      builder: (context) {
+        return Consumer(
+          builder: (context, ref, _) {
+            final router = ref.watch(routerProvider);
+            return MaterialApp.router(
+              theme: AppTheme.light,
+              routerConfig: router,
+            );
+          },
         );
-      });
-    }),
+      },
+    ),
   );
 }
 
 void main() {
   group('GestorShell', () {
-    testWidgets('deve exibir barra de navegação com cinco destinos', (tester) async {
+    testWidgets('deve exibir barra de navegação com cinco destinos', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
 
@@ -48,14 +52,18 @@ void main() {
       expect(find.text('Perfil'), findsOneWidget);
     });
 
-    testWidgets('deve exibir tela de médiuns como destino inicial', (tester) async {
+    testWidgets('deve exibir tela de médiuns como destino inicial', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('mediuns_screen')), findsOneWidget);
     });
 
-    testWidgets('deve navegar para tela de sessão ao tocar no destino', (tester) async {
+    testWidgets('deve navegar para tela de sessão ao tocar no destino', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
 
@@ -65,7 +73,9 @@ void main() {
       expect(find.byKey(const Key('sessao_screen')), findsOneWidget);
     });
 
-    testWidgets('deve navegar para tela de fila ao tocar no destino', (tester) async {
+    testWidgets('deve navegar para tela de fila ao tocar no destino', (
+      tester,
+    ) async {
       await tester.pumpWidget(_buildApp());
       await tester.pumpAndSettle();
 
